@@ -1,28 +1,52 @@
 <template>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title v-if="title">{{ title }} | MathPuzzle</title>
+  <title v-else>MathPuzzle</title>
+</head>
+<body>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <v-app>
+      <v-navigation-drawer
+        app
+        permanent
+        mini-variant
+      >
+        <NavItem
+          v-for="(item, i) in ndItems"
+          :key="i"
+          :item="item"
+        />
+      </v-navigation-drawer>
+      <v-main>
+        <router-view />
+      </v-main>
+    </v-app>
   </div>
+</body>
+</html>
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import NavItem from '@/components/NavItem';
 
 export default {
-  name: 'App',
+  data: function () {
+    return {
+      title: this.$route.params.title,
+      ndItems: [
+        {title: 'Задания', icon: 'mdi-text-box-multiple', href: '/'},
+        {title: 'Аккаунт', icon: 'mdi-account', href: "account/"},
+        // {title: 'Продолжить', icon: 'mdi-progress-clock', href: "#"},
+        // {title: 'Статистика', icon: 'mdi-poll', href: "#"},
+        // {title: 'Администрирование', icon: 'mdi-gavel', href: "#"},
+      ],
+    }
+  },
   components: {
-    HelloWorld
-  }
-}
-</script>
+    NavItem,
+  },
+};
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+</script>
