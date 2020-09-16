@@ -3,7 +3,7 @@
 
 <v-card width="600" outlined>
 <v-tabs centered v-model="tabs">
-  <!-- <v-tabs-slider></v-tabs-slider> -->
+  <v-tabs-slider></v-tabs-slider>
 
   <v-tab ref="0">Вход</v-tab>
   <v-tab ref="1">Регистрация</v-tab>

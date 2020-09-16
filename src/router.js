@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Tasks from '@/views/Tasks';
+import Task from '@/views/Task';
 import Account from '@/views/Account';
 import LoginRegister from '@/views/LoginRegister';
 
@@ -14,6 +15,10 @@ export default new Router({
             path: '/',
             component: Tasks,
             title: 'Задания',
+        },
+        {
+            path: '/task/:id/',
+            component: Task,
         },
         {
             path: '/account/',

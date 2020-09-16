@@ -4,6 +4,7 @@
 ```
 npm install
 ```
+Change `apiUrl` param in `src/settings.js` to your API URL.
 
 ### Compiles and hot-reloads for development
 ```
