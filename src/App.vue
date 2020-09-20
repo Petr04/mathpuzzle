@@ -37,7 +37,7 @@ export default {
       title: this.$route.params.title,
       ndItems: [
         {title: 'Задания', icon: 'mdi-text-box-multiple', href: '/'},
-        {title: 'Аккаунт', icon: 'mdi-account', href: "account/"},
+        {title: 'Аккаунт', icon: 'mdi-account', href: "/account/"},
         // {title: 'Продолжить', icon: 'mdi-progress-clock', href: "#"},
         // {title: 'Статистика', icon: 'mdi-poll', href: "#"},
         // {title: 'Администрирование', icon: 'mdi-gavel', href: "#"},
@@ -50,3 +50,15 @@ export default {
 };
 
 </script>
+<style>
+html {
+  overflow: hidden !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+</style>

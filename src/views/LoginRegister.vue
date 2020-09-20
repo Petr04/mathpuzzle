@@ -1,5 +1,5 @@
 <template>
-<v-container full-height class="center">
+<v-container fill-height class="center">
 
 <v-card width="600" outlined>
 <v-tabs centered v-model="tabs">
