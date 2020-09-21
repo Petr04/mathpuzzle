@@ -11,6 +11,8 @@
       >
         <v-stepper-step :key="i" :step="i+1" editable>
           {{ question.title }}
+          <!-- TODO: If no title, digit isn't centered. Fix it -->
+          <!-- TODO: Add wrong/correct mark to stepper header -->
         </v-stepper-step>
         <v-divider :key="i + '-divider'" v-if="i < task.questions.length-1">
         </v-divider>

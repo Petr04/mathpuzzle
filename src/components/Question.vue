@@ -1,7 +1,7 @@
 <template>
 <v-container>
 
-<h2 class="mb-3">{{ question.title }}</h2>
+<h2 v-if="question.title" class="mb-3">{{ question.title }}</h2>
 <p class="mb-0">{{ question.text }}</p>
 
 <v-form
@@ -10,7 +10,7 @@
   @submit.prevent="onSubmit"
 >
   <v-text-field
-    v-if="question.type == 'text_question'"
+    v-if="question.type == 'textQuestion'"
     v-model="answer"
     name="answer"
     label="Ответ"
@@ -24,6 +24,23 @@
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
     :readonly="status == StatusEnum.correct"
   ></v-text-field>
+  <v-radio-group
+    v-if="question.type == 'choiceQuestion'"
+    v-model="answer"
+    :error="status == StatusEnum.wrong"
+    :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
+    :success="status == StatusEnum.correct"
+    :success-messages="status == StatusEnum.correct ? 'Верно' : []"
+    :readonly="status == StatusEnum.correct"
+  >
+    <v-radio
+      v-for="(choiceText, i) in question.choices"
+      :key="i"
+      :label="choiceText"
+      :value="i"
+
+    ></v-radio>
+  </v-radio-group>
   <v-btn
     depressed
     type="submit"
@@ -58,7 +75,7 @@ export default {
   },
   computed: {
     empty() {
-      return !this.answer;
+      return !this.answer && this.answer !== 0;
     },
   },
   methods: {
