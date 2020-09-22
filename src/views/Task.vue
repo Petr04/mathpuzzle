@@ -40,6 +40,10 @@
           @statusChange="val => onStatusChange(i, val)"
         />
       </v-stepper-content>
+      <v-stepper-content :step="task.questions.length+1">
+        <h2>Готово!</h2>
+        Вы выполнили задание
+      </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
 
@@ -82,11 +86,33 @@ export default {
         this.solvedQuestion = true;
 
         setTimeout(() => {
-          if (this.solvedQuestion)
-            this.currentQuestion++;
+          if (this.solvedQuestion) {
+
+            const unsolvedNext = this.nextUnsolvedQuestion(this.currentQuestion);
+            let nextQuestion;
+
+            if (unsolvedNext == this.task.questions.length)
+              nextQuestion = this.nextUnsolvedQuestion(0);
+            else
+              nextQuestion = unsolvedNext;
+
+            this.currentQuestion = nextQuestion+1;
+
+          }
+
         }, this.nextQuestionTimeout);
       }
     },
+    nextUnsolvedQuestion(questionNumber) {
+      let i;
+
+      for (i = questionNumber; i < this.statuses.length; i++) {
+        if (this.statuses[i] != StatusEnum.correct)
+          return i;
+      }
+
+      return i;
+    }
   },
   mounted() {
     axios
