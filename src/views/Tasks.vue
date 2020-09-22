@@ -5,7 +5,7 @@
   <v-card
     v-for="(task, i) in tasks"
     :key="i"
-    :href="'/task/' + task.id"
+    :to="'/task/' + task.id"
     :class="'mb-' + margin"
     outlined
   >

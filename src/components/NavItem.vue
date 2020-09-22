@@ -4,7 +4,7 @@
   <template v-slot:activator="{ on, attrs }">
     <v-list-item
       link
-      :href="item.href"
+      :to="item.href"
       v-bind="attrs"
       v-on="on"
     >
