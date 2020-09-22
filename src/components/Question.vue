@@ -38,7 +38,6 @@
       :key="i"
       :label="choiceText"
       :value="i"
-
     ></v-radio>
   </v-radio-group>
   <v-btn
@@ -56,13 +55,7 @@
 <script>
 import axios from 'axios';
 import settings from '@/settings';
-
-const StatusEnum = Object.freeze({
-  default: 'default',
-  checking: 'checking',
-  wrong: 'wrong',
-  correct: 'correct',
-});
+import {StatusEnum} from '@/consts';
 
 export default {
   props: ['question'],
@@ -70,7 +63,7 @@ export default {
     return {
       answer: null,
       StatusEnum,
-      status: StatusEnum.default,
+      status: status ? status : StatusEnum.default,
     }
   },
   computed: {
@@ -78,11 +71,18 @@ export default {
       return !this.answer && this.answer !== 0;
     },
   },
+  watch: {
+    status(newValue) {
+      this.$emit('statusChange', newValue);
+    },
+  },
   methods: {
     async checkAnswer() {
       const response = await axios
-        .get(settings.apiUrl + '/tasks/check/' + this.question.id,
-          {params: {answer: this.answer}});
+        .get(settings.apiUrl + '/tasks/check/' + this.question.id, {params: {
+          answer: this.answer,
+          type: this.question.type,
+        }});
       return response.data.correct;
     },
     onSubmit() {
@@ -96,5 +96,4 @@ export default {
     }
   },
 };
-
 </script>
