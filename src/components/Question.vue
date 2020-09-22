@@ -14,10 +14,9 @@
     v-model="answer"
     name="answer"
     label="Ответ"
-    clearable
+    :clearable="status != StatusEnum.correct"
     clear-icon="mdi-close"
     @click:clear="clearStatus"
-    :loading="status == StatusEnum.checking"
     :error="status == StatusEnum.wrong"
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
@@ -46,6 +45,7 @@
     :disabled="empty"
     color="blue darken-2"
     :dark="!empty"
+    :loading="status == StatusEnum.checking"
     class="transition mt-3"
   >Отправить</v-btn>
 </v-form>
