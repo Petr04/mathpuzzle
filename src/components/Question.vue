@@ -14,14 +14,15 @@
     v-model="answer"
     name="answer"
     label="Ответ"
-    :clearable="status != StatusEnum.correct"
+    :clearable="!readonly"
     clear-icon="mdi-close"
     @click:clear="clearStatus"
     :error="status == StatusEnum.wrong"
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :readonly="status == StatusEnum.correct"
+    :messages="status == StatusEnum.saved ? 'Сохранено' : []"
+    :readonly="readonly"
   ></v-text-field>
   <v-radio-group
     v-if="question.type == 'choiceQuestion'"
@@ -30,7 +31,8 @@
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :readonly="status == StatusEnum.correct"
+    :messages="status == StatusEnum.saved ? 'Сохранено' : []"
+    :readonly="readonly"
   >
     <v-radio
       v-for="(choiceText, i) in question.choices"
@@ -42,7 +44,7 @@
   <v-btn
     depressed
     type="submit"
-    :disabled="empty"
+    :disabled="empty || readonly"
     color="blue darken-2"
     :dark="!empty"
     :loading="status == StatusEnum.checking"
@@ -58,17 +60,37 @@ import settings from '@/settings';
 import {StatusEnum} from '@/consts';
 
 export default {
-  props: ['question'],
+  props: {
+    question: {
+      type: Object,
+      required: true,
+    },
+    checkOnSubmit: {
+      type: Boolean,
+      default: false,
+    },
+    attemptsMax: {
+      type: Number,
+      default: Infinity,
+    },
+  },
   data () {
     return {
       answer: null,
       StatusEnum,
       status: status ? status : StatusEnum.default,
-    }
+
+      attempts: 0,
+    };
   },
   computed: {
     empty() {
       return !this.answer && this.answer !== 0;
+    },
+    readonly() {
+      return this.status == StatusEnum.correct ||
+        (this.status == StatusEnum.wrong &&
+          (this.attempts >= this.attemptsMax || this.checkOnSubmit));
     },
   },
   watch: {
@@ -86,6 +108,12 @@ export default {
       return response.data.correct;
     },
     onSubmit() {
+      if (this.checkOnSubmit)
+        this.status = StatusEnum.saved;
+      else
+        this.submit();
+    },
+    submit() {
       this.status = StatusEnum.checking;
       this.checkAnswer().then(correct => this.status = correct
         ? StatusEnum.correct

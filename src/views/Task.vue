@@ -13,12 +13,12 @@
           :key="i"
           :step="i+1"
           editable
-          :complete="statuses[i] == StatusEnum.correct"
+          :complete="finalStatuses.includes(statuses[i])"
           edit-icon="mdi-check"
           :color="statuses[i] == StatusEnum.correct ? 'success' : 'blue darken-2'"
           :rules="[() => statuses[i] != StatusEnum.wrong]"
           error-icon="mdi-close"
-          @click="solvedQuestion = false"
+          @click="questionSwitched = true"
         >
           {{ question.title }}
           <!-- TODO: If no title, digit isn't centered. Fix it -->
@@ -36,13 +36,29 @@
         :step="i+1"
       >
         <Question
+          ref="question"
+          :key="i"
+
           :question="question"
+          :checkOnSubmit="task.checkOnSubmit"
           @statusChange="val => onStatusChange(i, val)"
         />
       </v-stepper-content>
       <v-stepper-content :step="task.questions.length+1">
-        <h2>Готово!</h2>
-        Вы выполнили задание
+        <template v-if="task.checkOnSubmit">
+          <h2>Завершить</h2>
+          <p>Вы ответили на все вопросы</p>
+          <v-btn
+            @click="submitAll"
+            depressed
+            color="blue darken-2"
+            dark
+          >Проверить</v-btn>
+        </template>
+        <template v-else>
+          <h2>Готово!</h2>
+          <p>Вы выполнили задание</p>
+        </template>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -58,7 +74,7 @@
 <script>
 import axios from 'axios';
 import settings from '@/settings';
-import {StatusEnum} from '@/consts';
+import {StatusEnum, finalStatuses} from '@/consts';
 import Question from '@/components/Question';
 
 export default {
@@ -71,10 +87,12 @@ export default {
       task: null,
 
       currentQuestion: 1,
-      solvedQuestion: false,
+      questionSwitched: true,
       nextQuestionTimeout: 1000,
+      autoPageSwitch: true,
 
       StatusEnum,
+      finalStatuses,
       statuses: null,
     }
   },
@@ -82,19 +100,21 @@ export default {
     onStatusChange(i, val) {
       this.statuses[i] = val;
 
-      if (val == StatusEnum.correct) {
-        this.solvedQuestion = true;
+      if (finalStatuses.includes(val) && this.autoPageSwitch) {
+        this.questionSwitched = false;
 
         setTimeout(() => {
-          if (this.solvedQuestion) {
+          if (!this.questionSwitched) {
 
             const unsolvedNext = this.nextUnsolvedQuestion(this.currentQuestion);
             let nextQuestion;
 
-            if (unsolvedNext == this.task.questions.length)
+            if (unsolvedNext == this.task.questions.length) {
               nextQuestion = this.nextUnsolvedQuestion(0);
-            else
+            }
+            else {
               nextQuestion = unsolvedNext;
+            }
 
             this.currentQuestion = nextQuestion+1;
 
@@ -107,12 +127,19 @@ export default {
       let i;
 
       for (i = questionNumber; i < this.statuses.length; i++) {
-        if (this.statuses[i] != StatusEnum.correct)
+        if (!finalStatuses.includes(this.statuses[i]))
           return i;
       }
 
       return i;
-    }
+    },
+    submitAll() {
+      for (let question of this.$refs.question)
+        question.submit();
+
+      this.autoPageSwitch = false;
+      this.currentQuestion = 1;
+    },
   },
   mounted() {
     axios
