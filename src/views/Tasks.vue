@@ -10,7 +10,7 @@
     outlined
   >
     <v-card-title>{{ task.title }}</v-card-title>
-    <v-card-subtitle>{{ task.length }} {{ declension('вопрос', task.length) }}</v-card-subtitle>
+    <v-card-subtitle>{{ task.length }} {{ decline('вопрос', 2, task.length) }}</v-card-subtitle>
     <v-card-text v-if="task.text" class="pre">{{ task.text }}</v-card-text>
   </v-card>
 </template>
@@ -32,6 +32,7 @@
 <script>
 import axios from 'axios';
 import settings from '@/settings';
+import decline from '@/decline';
 
 export default {
   data: () => ({
@@ -40,16 +41,7 @@ export default {
     tasks: null,
   }),
   methods: {
-    declension(noun, n) { // Только для 2 склонения
-      let add = 'ов';
-      const lastDigit = n % 10;
-
-      if (lastDigit == 1) add = '';
-      else if (2 <= lastDigit && lastDigit <= 4)
-        add = 'а';
-
-      return noun + add;
-    }
+    decline,
   },
   mounted() {
     axios

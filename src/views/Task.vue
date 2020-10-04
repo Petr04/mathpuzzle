@@ -1,6 +1,5 @@
 <template>
 <v-container>
-
 <template v-if="task">
   <h1 class="mb-6">{{ task.title }}</h1>
 
@@ -13,7 +12,7 @@
           :key="i"
           :step="i+1"
           editable
-          :complete="finalStatuses.includes(statuses[i])"
+          :complete="statuses[i] == StatusEnum.correct"
           edit-icon="mdi-check"
           :color="statuses[i] == StatusEnum.correct ? 'success' : 'blue darken-2'"
           :rules="[() => statuses[i] != StatusEnum.wrong]"
@@ -74,7 +73,7 @@
 <script>
 import axios from 'axios';
 import settings from '@/settings';
-import {StatusEnum, finalStatuses} from '@/consts';
+import {StatusEnum} from '@/consts';
 import Question from '@/components/Question';
 
 export default {
@@ -92,15 +91,15 @@ export default {
       autoPageSwitch: true,
 
       StatusEnum,
-      finalStatuses,
       statuses: null,
+      questionRefs: null,
     }
   },
   methods: {
     onStatusChange(i, val) {
       this.statuses[i] = val;
 
-      if (finalStatuses.includes(val) && this.autoPageSwitch) {
+      if (this.$refs.question[i].final && this.autoPageSwitch) {
         this.questionSwitched = false;
 
         setTimeout(() => {
@@ -127,7 +126,7 @@ export default {
       let i;
 
       for (i = questionNumber; i < this.statuses.length; i++) {
-        if (!finalStatuses.includes(this.statuses[i]))
+        if (!this.$refs.question[i].final)
           return i;
       }
 
@@ -148,6 +147,7 @@ export default {
         this.task = response.data;
         this.statuses = Array(this.task.questions.length).fill(StatusEnum.default);
       });
+    this.questionRefs = this.$refs.question;
   },
 };
 </script>

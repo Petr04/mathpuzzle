@@ -21,7 +21,7 @@
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :messages="status == StatusEnum.saved ? 'Сохранено' : []"
+    :messages="(status == StatusEnum.saved ? 'Сохранено' : []).concat(attemptMessages)"
     :readonly="readonly"
   ></v-text-field>
   <v-radio-group
@@ -31,7 +31,7 @@
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :messages="status == StatusEnum.saved ? 'Сохранено' : []"
+    :messages="(status == StatusEnum.saved ? 'Сохранено' : []).concat(attemptMessages)"
     :readonly="readonly"
   >
     <v-radio
@@ -57,7 +57,8 @@
 <script>
 import axios from 'axios';
 import settings from '@/settings';
-import {StatusEnum} from '@/consts';
+import {StatusEnum, finalStatuses} from '@/consts';
+import decline from '@/decline';
 
 export default {
   props: {
@@ -69,10 +70,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    attemptsMax: {
-      type: Number,
-      default: Infinity,
-    },
   },
   data () {
     return {
@@ -81,6 +78,9 @@ export default {
       status: status ? status : StatusEnum.default,
 
       attempts: 0,
+      attemptsMax: this.question.attempts == 0
+        ? Infinity
+        : this.question.attempts,
     };
   },
   computed: {
@@ -91,6 +91,24 @@ export default {
       return this.status == StatusEnum.correct ||
         (this.status == StatusEnum.wrong &&
           (this.attempts >= this.attemptsMax || this.checkOnSubmit));
+    },
+    final() {
+      return finalStatuses.includes(this.status)
+        || (this.status == StatusEnum.wrong && this.attemptsLeft == 0);
+    },
+    attemptsLeft() {
+      return this.attemptsMax - this.attempts;
+    },
+    attemptMessages() {
+      if (this.attemptsMax == Infinity)
+        return [];
+
+      return [this.attemptsLeft
+        ? `Остал${this.attemptsLeft == 1 ? 'а' : 'о'}сь `
+          + this.attemptsLeft
+          + this.decline(' попытка', 1, this.attemptsLeft, 'и')
+        : 'Не осталось попыток'
+      ];
     },
   },
   watch: {
@@ -118,10 +136,12 @@ export default {
       this.checkAnswer().then(correct => this.status = correct
         ? StatusEnum.correct
         : StatusEnum.wrong);
+      this.attempts++;
     },
     clearStatus() {
       this.status = StatusEnum.default;
-    }
+    },
+    decline,
   },
 };
 </script>
