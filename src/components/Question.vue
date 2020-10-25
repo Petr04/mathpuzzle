@@ -2,8 +2,9 @@
 <v-container>
 
 <h2 v-if="question.title" class="mb-3">{{ question.title }}</h2>
-<p class="mb-0">{{ question.text }}</p>
-
+<mathjax
+  :formula="question.text"
+></mathjax>
 <v-form
   ref="form"
   class="mt-3"
@@ -34,12 +35,24 @@
     :messages="(status == StatusEnum.saved ? 'Сохранено' : []).concat(attemptMessages)"
     :readonly="readonly"
   >
-    <v-radio
+    <template
       v-for="(choiceText, i) in question.choices"
-      :key="i"
-      :label="choiceText"
-      :value="i"
-    ></v-radio>
+    >
+      <v-radio
+        :key="i"
+        :label="isTex(choiceText) ? '' : choiceText"
+        :value="i"
+      >
+        <template
+          v-if="isTex(choiceText)"
+          slot="label"
+        >
+          <mathjax
+            :formula="String.raw({raw: choiceText})"
+          ></mathjax>
+        </template>
+      </v-radio>
+    </template>
   </v-radio-group>
   <v-btn
     depressed
@@ -55,6 +68,8 @@
 </v-container>
 </template>
 <script>
+import {VueMathjax} from 'vue-mathjax';
+
 import axios from 'axios';
 import settings from '@/settings';
 import {StatusEnum, finalStatuses} from '@/consts';
@@ -70,6 +85,9 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  components: {
+    'mathjax': VueMathjax,
   },
   data () {
     return {
@@ -140,6 +158,9 @@ export default {
     },
     clearStatus() {
       this.status = StatusEnum.default;
+    },
+    isTex(s) {
+      return s.slice(0, 2) == '$$' && s.slice(-2) == '$$';
     },
     decline,
   },

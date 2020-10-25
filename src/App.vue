@@ -61,4 +61,9 @@ html::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
+
+.MathJax_Display[style] {
+  display: inline !important;
+  text-align: left !important;
+}
 </style>
