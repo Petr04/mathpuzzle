@@ -13,6 +13,10 @@
     <v-card-subtitle>{{ task.length }} {{ decline('вопрос', 2, task.length) }}</v-card-subtitle>
     <v-card-text v-if="task.text" class="pre">{{ task.text }}</v-card-text>
   </v-card>
+<SpeedDial
+  title="Создать"
+  :items="items"
+/>
 </template>
 <template v-else>
   <v-card
@@ -26,19 +30,25 @@
     ></v-skeleton-loader>
   </v-card>
 </template>
-
 </v-container>
 </template>
 <script>
 import axios from 'axios';
 import settings from '@/settings';
 import decline from '@/decline';
+import SpeedDial from '@/components/SpeedDial';
 
 export default {
+  components: {
+    SpeedDial,
+  },
   data: () => ({
     margin: 3,
-
     tasks: null,
+    items: [
+      {title: 'Тестовое задание', icon: 'mdi-pencil', href: '/create/test'},
+      {title: 'Лото', icon: 'mdi-cards', href: '/create/loto'},
+    ],
   }),
   methods: {
     decline,
