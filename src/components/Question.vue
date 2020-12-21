@@ -67,6 +67,11 @@
 
 </v-container>
 </template>
+<style>
+.transition {
+  transition: .2s;
+}
+</style>
 <script>
 import {VueMathjax} from 'vue-mathjax';
 

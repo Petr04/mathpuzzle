@@ -1,0 +1,22 @@
+.MathJax_Display[style] {
+    display: inline !important;
+    text-align: left !important;
+}
+
+.v-tabs-items {
+    word-break: break-word;
+}
+
+.v-stepper__header {
+    box-shadow: none;
+}
+
+
+/* Flex containers */
+.flex-space-between, .flex-start {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.flex-space-between { justify-content: space-between; }
+.flex-start { justify-content: start; }
