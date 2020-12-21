@@ -21,7 +21,7 @@
         />
       </v-navigation-drawer>
       <v-main>
-        <router-view />
+        <router-view style="max-width: 960px"/>
       </v-main>
     </v-app>
   </div>
@@ -52,9 +52,4 @@ export default {
 </script>
 <style>
 html { overflow-y: auto; }
-
-.MathJax_Display[style] {
-  display: inline !important;
-  text-align: left !important;
-}
 </style>
