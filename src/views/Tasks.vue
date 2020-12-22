@@ -10,8 +10,15 @@
     outlined
   >
     <v-card-title>{{ task.title }}</v-card-title>
-    <v-card-subtitle>{{ task.questions.length }} {{ decline('вопрос', 2, task.questions.length) }}</v-card-subtitle>
-    <v-card-text v-if="task.text" class="pre">{{ task.text }}</v-card-text>
+    <v-card-subtitle>
+      <!-- {{ task.questions.length }} -->
+      <!-- {{ decline('вопрос', 2, task.questions.length) }}<br> -->
+      {{ getQuestionsPreview(task.questions) }}
+
+    </v-card-subtitle>
+    <v-card-text v-if="task.text">
+      {{ task.text }}
+    </v-card-text>
   </v-card>
   <!-- <SpeedDial
     title="Создать"
@@ -62,12 +69,24 @@ export default {
   data: () => ({
     margin: 3,
     tasks: null,
+    questionsPreviewMaxCount: 10,
+    questionsPreviewSeparator: ' • ',
     items: [
       {title: 'Тестовое задание', icon: 'mdi-pencil', href: '/create/test'},
     ],
   }),
   methods: {
     decline,
+    getQuestionsPreview(questions) {
+      const lenDiff = questions.length - this.questionsPreviewMaxCount;
+      if (lenDiff >= 2) {
+        return questions.slice(0, this.questionsPreviewMaxCount)
+          .join(this.questionsPreviewSeparator)
+          + ` и ещё ${lenDiff} ${decline('вопрос', 2, lenDiff)}`;
+      }
+
+      return questions.join(this.questionsPreviewSeparator);
+    }
   },
   mounted() {
     axios
