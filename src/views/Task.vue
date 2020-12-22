@@ -46,12 +46,12 @@
           :key="i"
 
           :question="question"
-          :checkOnSubmit="task.checkOnSubmit"
+          :check_on_submit="task.check_on_submit"
           @statusChange="val => onStatusChange(i, val)"
         />
       </v-stepper-content>
       <v-stepper-content :step="task.questions.length+1">
-        <template v-if="task.checkOnSubmit">
+        <template v-if="task.check_on_submit">
           <h2>Завершить</h2>
           <p>Вы ответили на все вопросы</p>
           <v-btn

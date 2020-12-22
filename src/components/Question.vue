@@ -86,7 +86,7 @@ export default {
       type: Object,
       required: true,
     },
-    checkOnSubmit: {
+    check_on_submit: {
       type: Boolean,
       default: false,
     },
@@ -113,7 +113,7 @@ export default {
     readonly() {
       return this.status == StatusEnum.correct ||
         (this.status == StatusEnum.wrong &&
-          (this.attempts >= this.attemptsMax || this.checkOnSubmit));
+          (this.attempts >= this.attemptsMax || this.check_on_submit));
     },
     final() {
       return finalStatuses.includes(this.status)
@@ -149,7 +149,7 @@ export default {
       return response.data.correct;
     },
     onSubmit() {
-      if (this.checkOnSubmit)
+      if (this.check_on_submit)
         this.status = StatusEnum.saved;
       else
         this.submit();

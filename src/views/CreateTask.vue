@@ -3,7 +3,10 @@
 
 <!-- {{ questions }} -->
 
-<v-text-field label="Заголовок теста"></v-text-field>
+<v-text-field
+  label="Заголовок задания"
+  v-model="taskData.title"
+></v-text-field>
 
 <div class="mb-5">
   <v-stepper
@@ -73,7 +76,7 @@
   </v-stepper>
 
   <v-switch
-    v-model="taskData.checkOnSubmit"
+    v-model="taskData.check_on_submit"
     label="Проверять при отправлении"
     hint="Показывать правильность решения каждого вопроса только после отправления
       всего задания"
@@ -85,22 +88,50 @@
   depressed
   dark
   color="blue darken-2"
-  @click="saveQuestion"
+  @click="saveTask"
 >Сохранить</v-btn>
 </v-container>
 </template>
 <script>
+import axios from 'axios';
+import settings from '@/settings';
 import CreateQuestion from '@/components/CreateQuestion';
 
-const emptyQuestion = {
-  title: '',
-  text: '',
-  checkOnSubmit: false,
-  type: 'textQuestion',
-  attempts: 1,
-  answer: null,
-  choices: ['', ''],
-};
+class Question {
+  constructor() {
+    this.title = '';
+    this.text = '';
+    this.check_on_submit = false;
+    this.type = 'textQuestion';
+    this.attempts = 1;
+    this.answer = null;
+    this.choices = ['', ''];
+  }
+
+  get answers() {
+    if (this.answer == null || this.answer == '') {
+      return null;
+    }
+    else if (this.type == 'textQuestion') {
+      return [{
+        text: this.answer,
+        answer_num: 0,
+        is_true: true,
+      }];
+    } else if (this.type == 'choiceQuestion') {
+      const ret = [];
+      for (let [i, choice] of this.choices.entries()) {
+        ret.push({
+          text: choice,
+          answer_num: i,
+          is_true: i == this.answer,
+        });
+      }
+      return ret;
+    }
+    return null;
+  }
+}
 
 export default {
   components: {
@@ -112,7 +143,7 @@ export default {
       ],
       taskData: {
         title: '',
-        checkOnSubmit: false,
+        check_on_submit: false,
       },
       currentQuestion: 0,
       lastQuestion: 0,
@@ -121,7 +152,7 @@ export default {
   },
   methods: {
     createQuestion() {
-      this.questions.push({...emptyQuestion});
+      this.questions.push(new Question());
       setTimeout(() => this.currentQuestion = this.questions.length);
     },
     removeQuestion() {
@@ -145,10 +176,24 @@ export default {
 
       setTimeout(() => this.lastActionIsDeleting = true);
     },
-    saveQuestion() {
-      
-    },
+    getAPIObject() {
+      const ret = {...this.taskData};
+      ret.questions = [];
 
+      for (let question of this.questions) {
+        ret.questions.push(Object.assign({},
+          question, {answers: question.answers}
+        ));
+      }
+
+      return {task: ret};
+    },
+    saveTask() {
+      console.log(JSON.stringify(this.getAPIObject(), null, '    '));
+      axios.post(settings.apiUrl + '/tasks/', this.getAPIObject())
+        .then(console.log);
+      this.$router.push('/');
+    },
     setSlideGroupMaxWidth() {
       const buttons = this.$refs.buttons.$el;
       const stepperHeader = this.$refs.stepperHeader;
@@ -163,7 +208,6 @@ export default {
   },
   watch: {
     currentQuestion(newValue, oldValue) {
-      console.log(newValue);
       this.lastQuestion = oldValue;
       this.lastActionIsDeleting = false;
     },
