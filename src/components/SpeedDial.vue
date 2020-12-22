@@ -3,7 +3,7 @@
   v-model="fab"
   direction="top"
   transition="slide-y-reverse-transition"
-  bottom right absolute
+  bottom right fixed
 >
   <template v-slot:activator>
     <v-btn
