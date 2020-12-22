@@ -52,7 +52,7 @@
 <script>
 import axios from 'axios';
 import settings from '@/settings';
-import decline from '@/decline';
+import decline from '@/lib/decline';
 // import SpeedDial from '@/components/SpeedDial';
 
 export default {

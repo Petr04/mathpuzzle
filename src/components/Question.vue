@@ -78,7 +78,7 @@ import {VueMathjax} from 'vue-mathjax';
 import axios from 'axios';
 import settings from '@/settings';
 import {StatusEnum, finalStatuses} from '@/consts';
-import decline from '@/decline';
+import decline from '@/lib/decline';
 
 export default {
   props: {
