@@ -10,7 +10,7 @@
     outlined
   >
     <v-card-title>{{ task.title }}</v-card-title>
-    <v-card-subtitle>{{ task.length }} {{ decline('вопрос', 2, task.length) }}</v-card-subtitle>
+    <v-card-subtitle>{{ task.questions.length }} {{ decline('вопрос', 2, task.questions.length) }}</v-card-subtitle>
     <v-card-text v-if="task.text" class="pre">{{ task.text }}</v-card-text>
   </v-card>
   <!-- <SpeedDial
@@ -71,8 +71,8 @@ export default {
   },
   mounted() {
     axios
-      .get(settings.apiUrl + '/tasks/')
-      .then(response => this.tasks = response.data);
+      .get(settings.apiUrl + '/tasks')
+      .then(response => this.tasks = response.data.tasks);
   },
 };
 </script>

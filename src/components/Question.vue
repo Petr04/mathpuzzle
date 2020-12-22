@@ -36,7 +36,7 @@
     :readonly="readonly"
   >
     <template
-      v-for="(choiceText, i) in question.choices"
+      v-for="(choiceText, i) in question.answers"
     >
       <v-radio
         :key="i"

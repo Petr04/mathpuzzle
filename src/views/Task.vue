@@ -9,33 +9,31 @@
     class="elevation-0 ma-0 rounded-0"
   >
     <v-stepper-header>
-      <!-- <v-row class="mx-0"> -->
-        <v-slide-group
-          show-arrows
-          center-active
-          :value="currentQuestion-1"
+      <v-slide-group
+        show-arrows
+        center-active
+        :value="currentQuestion-1"
+      >
+        <v-slide-item
+          v-for="(question, i) in task.questions"
+          :key="i"
+          v-slot="{ active, toggle }"
         >
-          <v-slide-item
-            v-for="(question, i) in task.questions"
-            :key="i"
-            v-slot="{ active, toggle }"
+          <v-stepper-step
+            :step="i+1"
+            editable
+            :complete="statuses[i] == StatusEnum.correct"
+            edit-icon="mdi-check"
+            :color="statuses[i] == StatusEnum.correct ? 'success' : 'blue darken-2'"
+            :rules="[() => statuses[i] != StatusEnum.wrong]"
+            error-icon="mdi-close"
+            @click="toggle(); questionSwitched = true"
           >
-            <v-stepper-step
-              :step="i+1"
-              editable
-              :complete="statuses[i] == StatusEnum.correct"
-              edit-icon="mdi-check"
-              :color="statuses[i] == StatusEnum.correct ? 'success' : 'blue darken-2'"
-              :rules="[() => statuses[i] != StatusEnum.wrong]"
-              error-icon="mdi-close"
-              @click="toggle(); questionSwitched = true"
-            >
-              {{ question.title }}
-              <!-- TODO: If no title, digit isn't centered. Fix it -->
-            </v-stepper-step>
-          </v-slide-item>
-        </v-slide-group>
-      <!-- </v-row> -->
+            {{ question.title }}
+            <!-- TODO: If no title, digit isn't centered. Fix it -->
+          </v-stepper-step>
+        </v-slide-item>
+      </v-slide-group>
     </v-stepper-header>
     <v-stepper-items>
       <v-stepper-content
