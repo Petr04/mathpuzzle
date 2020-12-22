@@ -5,6 +5,7 @@ import Tasks from '@/views/Tasks';
 import Task from '@/views/Task';
 import Account from '@/views/Account';
 import LoginRegister from '@/views/LoginRegister';
+import CreateTask from '@/views/CreateTask';
 
 Vue.use(Router);
 
@@ -29,5 +30,9 @@ export default new Router({
             path: '/account/:action/', // login or register
             component: LoginRegister,
         },
+        {
+            path: '/create/task',
+            component: CreateTask,
+        }
     ],
 });
