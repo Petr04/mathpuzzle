@@ -109,7 +109,7 @@ class Question {
   }
 
   get answers() {
-    if (this.answer == null || this.answer == '') {
+    if (this.answer == null || this.answer === '') {
       return null;
     }
     else if (this.type == 'textQuestion') {
