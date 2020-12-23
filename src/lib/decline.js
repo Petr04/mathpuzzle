@@ -18,7 +18,8 @@ const declensionsSpecial = {
         {1: 'попыток'},
 };
 
-function decline(noun, declensionParam, n, end='ы') {
+function decline(noun, declensionParam, number, end='ы') {
+    const n = number % 10;
     if (n == 1) return noun;
 
     let nIndex;

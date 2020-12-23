@@ -22,7 +22,7 @@
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :messages="(status == StatusEnum.saved ? 'Сохранено' : []).concat(attemptMessages)"
+    :messages="(status == StatusEnum.saved ? ['Сохранено'] : []).concat(attemptMessages)"
     :readonly="readonly"
   ></v-text-field>
   <v-radio-group
@@ -32,7 +32,7 @@
     :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
     :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :messages="(status == StatusEnum.saved ? 'Сохранено' : []).concat(attemptMessages)"
+    :messages="(status == StatusEnum.saved ? ['Сохранено'] : []).concat(attemptMessages)"
     :readonly="readonly"
   >
     <template
@@ -128,8 +128,8 @@ export default {
 
       return [this.attemptsLeft
         ? `Остал${this.attemptsLeft == 1 ? 'а' : 'о'}сь `
-          + this.attemptsLeft
-          + this.decline(' попытка', 1, this.attemptsLeft, 'и')
+          + this.attemptsLeft + ' '
+          + this.decline('попытка', 1, this.attemptsLeft, 'и')
         : 'Не осталось попыток'
       ];
     },
