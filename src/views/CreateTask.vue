@@ -145,6 +145,7 @@ export default {
         title: '',
         check_on_submit: false,
       },
+      error: null,
       currentQuestion: 0,
       lastQuestion: 0,
       lastActionIsDeleting: false,
@@ -191,8 +192,14 @@ export default {
     saveTask() {
       console.log(JSON.stringify(this.getAPIObject(), null, '    '));
       axios.post(settings.apiUrl + '/tasks/', this.getAPIObject())
-        .then(console.log);
-      this.$router.push('/');
+        .then(response => {
+          console.log(response);
+          this.$router.push('/');
+        })
+        .catch(error => {
+          console.log('ERROR:', error.response.data);
+          this.error = error.response.data;
+        });
     },
     setSlideGroupMaxWidth() {
       const buttons = this.$refs.buttons.$el;
