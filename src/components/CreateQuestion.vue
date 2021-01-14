@@ -1,13 +1,18 @@
 <template>
 <v-container>
 
-<v-text-field
+<improved-text-field
   label="Заголовок вопроса"
   v-model="question.title"
-></v-text-field>
+  :max-length="32"
+  required
+  class="mb-3"
+></improved-text-field>
 <v-textarea
   label="Текст вопроса"
   v-model="question.text"
+  :rules="[rules.required()]"
+  required
   auto-grow
   outlined
 ></v-textarea>
@@ -26,35 +31,53 @@
     >{{ label }}</v-chip>
   </v-chip-group>
 </div>
-<v-text-field
+<improved-text-field
   v-if="question.type == 'textQuestion'"
-  label="Ответ"
   v-model="question.answer"
-></v-text-field>
+  label="Ответ"
+  :max-length="64"
+  required
+></improved-text-field>
 <template v-else-if="question.type == 'choiceQuestion'">
   <v-radio-group v-model="question.answer">
-    <RadioTextField
-      v-for="(choice, i) in question.choices"
-      :key="i"
-      :text-value="choice"
-      @input="val => question.choices[i] = val"
-    >
-      <template
-        v-slot:append
-        v-if="question.choices.length > 2"
+    <v-form ref="choicesForm">
+      <improved-text-field
+        v-for="(choice, i) in question.choices"
+        :key="i"
+        required
+        :max-length="64"
+        :value="choice"
+        @input="val => question.choices[i] = val"
+        dense
       >
-        <v-btn
-          icon
-          @click="question.choices.splice(i, 1)"
-        ><v-icon>mdi-close</v-icon></v-btn>
-      </template>
-    </RadioTextField>
+        <template v-slot:prepend>
+          <v-radio></v-radio>
+        </template>
+        <template
+          v-slot:append
+          v-if="question.choices.length > 2"
+        >
+          <v-btn
+            icon
+            @click="question.choices.splice(i, 1)"
+          ><v-icon>mdi-close</v-icon></v-btn>
+        </template>
+      </improved-text-field>
+    </v-form>
+
     <v-btn
       icon
       @click="createChoice"
       class="ml-10"
-    ><v-icon>mdi-plus</v-icon></v-btn>        
+    ><v-icon>mdi-plus</v-icon></v-btn>
+
   </v-radio-group>
+  <v-alert
+    :value="question.answer == null && submitted"
+    type="error"
+  >
+    Выберите правильный вариант ответа
+  </v-alert>
 </template>
 <div class="flex-start">
   <v-checkbox
@@ -73,7 +96,8 @@
 </v-container>
 </template>
 <script>
-import RadioTextField from '@/components/RadioTextField';
+import ImprovedTextField from '@/components/ImprovedTextField';
+import rules from '@/lib/rules';
 
 const typesLabels = {
   textQuestion: 'Текстовый ответ',
@@ -81,11 +105,10 @@ const typesLabels = {
 };
 
 export default {
-  props: ['question'],
-  components: {
-    RadioTextField,
-  },
+  props: ['question', 'submitted'],
+  components: {ImprovedTextField},
   data: () => ({
+    rules,
     typesLabels,
     restrictAttempts: false,
   }),
@@ -93,6 +116,8 @@ export default {
     createChoice() {
       if (!this.question.choices.includes(''))
         this.question.choices.push('');
+
+      this.$refs.choicesForm.validate();
     },
   },
 };

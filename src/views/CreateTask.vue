@@ -3,98 +3,116 @@
 
 <!-- {{ questions }} -->
 
-<v-text-field
-  label="Заголовок задания"
-  v-model="taskData.title"
-></v-text-field>
+<v-form
+  ref="form"
+>
+  <improved-text-field
+    v-model="taskData.title"
+    label="Заголовок задания"
+    :max-length="64"
+    required
+  ></improved-text-field>
 
-<div class="mb-5">
-  <v-stepper
-    v-model="currentQuestion"
-    non-linear
-    class="elevation-0 ma-0 rounded-0"
-  >
-    <v-stepper-header
-      class="flex-space-between"
-      ref="stepperHeader"
+  <div class="mb-5">
+    <v-stepper
+      v-model="currentQuestion"
+      non-linear
+      class="elevation-0 ma-0 rounded-0"
     >
-      <v-slide-group
-        show-arrows
-        center-active
-        :value="currentQuestion-1"
-        ref="slideGroup"
+      <v-stepper-header
+        class="flex-space-between"
+        ref="stepperHeader"
       >
-        <v-slide-item
+        <v-slide-group
+          show-arrows
+          center-active
+          :value="currentQuestion-1"
+          ref="slideGroup"
+        >
+          <v-slide-item
+            v-for="(question, i) in questions"
+            :key="i"
+            v-slot="{ active, toggle }"
+          >
+            <v-stepper-step
+              :step="i+1"
+              editable
+              @click="toggle"
+            >
+              {{ question.title.trim() || 'Новый вопрос' }}
+            </v-stepper-step>
+          </v-slide-item>
+        </v-slide-group>
+
+        <v-card
+          class="rounded-pill pa-1"
+          ref="buttons"
+          outlined
+        >
+          <div class="flex-space-between">
+            <v-btn
+              fab dark small
+              depressed
+              color="red"
+              class="mr-1"
+              @click="createQuestion"
+            ><v-icon>mdi-plus</v-icon></v-btn>
+            <v-btn
+              fab small icon
+              @click="removeQuestion"
+            ><v-icon>mdi-close</v-icon></v-btn>
+          </div>
+        </v-card>
+
+      </v-stepper-header>
+      <v-tabs-items
+        :value="currentQuestion-1"
+        class="px-10"
+      >
+        <v-tab-item
           v-for="(question, i) in questions"
           :key="i"
-          v-slot="{ active, toggle }"
         >
-          <v-stepper-step
-            :step="i+1"
-            editable
-            @click="toggle"
-          >
-            {{ question.title.trim() || 'Новый вопрос' }}
-          </v-stepper-step>
-        </v-slide-item>
-      </v-slide-group>
+          <CreateQuestion
+            ref="createQuestion"
+            :submitted="submitted"
+            :question="question"
+          />
+        </v-tab-item>
+      </v-tabs-items>
+    </v-stepper>
 
-      <v-card
-        class="rounded-pill pa-1"
-        ref="buttons"
-        outlined
-      >
-        <div class="flex-space-between">
-          <v-btn
-            fab dark small
-            depressed
-            color="red"
-            class="mr-1"
-            @click="createQuestion"
-          ><v-icon>mdi-plus</v-icon></v-btn>
-          <v-btn
-            fab small icon
-            @click="removeQuestion"
-          ><v-icon>mdi-close</v-icon></v-btn>
-        </div>
-      </v-card>
+    <v-switch
+      v-model="taskData.check_on_submit"
+      label="Проверять при отправлении"
+      hint="Показывать правильность решения каждого вопроса только после отправления
+        всего задания"
+      persistent-hint
+    ></v-switch>
+  </div>
 
-    </v-stepper-header>
-    <v-tabs-items
-      :value="currentQuestion-1"
-      class="px-10"
-    >
-      <v-tab-item
-        v-for="(question, i) in questions"
-        :key="i"
-      >
-        <CreateQuestion
-          :question="question"
-        />
-      </v-tab-item>
-    </v-tabs-items>
-  </v-stepper>
+  <v-alert
+    :value="questions.length == 0 && submitted"
+    type="error"
+  >
+    Вы не создали ни одного вопроса
+  </v-alert>
 
-  <v-switch
-    v-model="taskData.check_on_submit"
-    label="Проверять при отправлении"
-    hint="Показывать правильность решения каждого вопроса только после отправления
-      всего задания"
-    persistent-hint
-  ></v-switch>
-</div>
+  <v-btn
+    depressed
+    dark
+    color="blue darken-2"
+    @click="saveTask"
+  >Сохранить</v-btn>
+</v-form>
 
-<v-btn
-  depressed
-  dark
-  color="blue darken-2"
-  @click="saveTask"
->Сохранить</v-btn>
 </v-container>
 </template>
 <script>
 import axios from 'axios';
 import settings from '@/settings';
+import rules from '@/lib/rules';
+import ImprovedTextField from '@/components/ImprovedTextField';
 import CreateQuestion from '@/components/CreateQuestion';
 
 class Question {
@@ -136,6 +154,7 @@ class Question {
 export default {
   components: {
     CreateQuestion,
+    ImprovedTextField,
   },
   data() {
     return {
@@ -145,6 +164,10 @@ export default {
         title: '',
         check_on_submit: false,
       },
+
+      rules,
+      submitted: false,
+
       currentQuestion: 0,
       lastQuestion: 0,
       lastActionIsDeleting: false,
@@ -189,9 +212,23 @@ export default {
       return {task: ret};
     },
     saveTask() {
-      console.log(JSON.stringify(this.getAPIObject(), null, '    '));
+      this.submitted = true;
+
+      let valid = this.$refs.form.validate();
+      const choicesForm = this.$refs.createQuestion[this.currentQuestion-1]
+        .$refs.choicesForm;
+
+      if (this.questions[this.currentQuestion-1].type == 'choiceQuestion') {
+        // doesn't work without duplication for some reason
+        choicesForm.validate();
+        valid &&= choicesForm.validate();
+      }
+
+      if (!valid) return;
+
       axios.post(settings.apiUrl + '/tasks/', this.getAPIObject())
         .then(console.log);
+
       this.$router.push('/');
     },
     setSlideGroupMaxWidth() {

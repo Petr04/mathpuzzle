@@ -122,17 +122,17 @@ export default {
       tabs: tabs,
 
       loginRules: [
-        s => !!s || 'Введите логин',
+        s => Boolean(s) || 'Введите логин',
       ],
       passwordRules: [
-        s => !!s || 'Введите пароль',
+        s => Boolean(s) || 'Введите пароль',
       ],
       passwordRegisterRules: [
-        s => !!s || 'Введите пароль',
+        s => Boolean(s) || 'Введите пароль',
         s => s.length <= 8 || 'Пароль должен быть длиннее 8 символов',
       ],
       passwordRepeatRules: [
-        s => !!s || 'Повторите пароль',
+        s => Boolean(s) || 'Повторите пароль',
         s => s == this.passwordRegister || 'Пароли не совпадают',
       ],
     };
