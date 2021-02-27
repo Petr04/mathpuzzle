@@ -74,9 +74,6 @@
 </style>
 <script>
 import {VueMathjax} from 'vue-mathjax';
-
-import axios from 'axios';
-import settings from '@/settings';
 import {StatusEnum, finalStatuses} from '@/consts';
 import decline from '@/lib/decline';
 
@@ -141,8 +138,8 @@ export default {
   },
   methods: {
     async checkAnswer() {
-      const response = await axios
-        .get(settings.apiUrl + '/tasks/check/' + this.question.id, {params: {
+      const response = await this.$axios
+        .get('/tasks/check/' + this.question.id, {params: {
           answer: this.answer,
           type: this.question.type,
         }});

@@ -78,8 +78,6 @@
 </v-container>
 </template>
 <script>
-import axios from 'axios';
-import settings from '@/settings';
 import {StatusEnum} from '@/consts';
 import Question from '@/components/Question';
 
@@ -89,7 +87,6 @@ export default {
   },
   data() {
     return {
-      settings: settings,
       task: null,
 
       currentQuestion: 1,
@@ -148,8 +145,8 @@ export default {
     },
   },
   mounted() {
-    axios
-      .get(settings.apiUrl + '/tasks/' + this.$route.params.id)
+    this.$axios
+      .get('/tasks/' + this.$route.params.id)
       .then(response => {
         this.task = response.data;
         this.statuses = Array(this.task.questions.length).fill(StatusEnum.default);

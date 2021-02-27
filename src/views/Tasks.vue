@@ -57,8 +57,6 @@
 </v-container>
 </template>
 <script>
-import axios from 'axios';
-import settings from '@/settings';
 import decline from '@/lib/decline';
 // import SpeedDial from '@/components/SpeedDial';
 
@@ -89,8 +87,8 @@ export default {
     }
   },
   mounted() {
-    axios
-      .get(settings.apiUrl + '/tasks')
+    this.$axios
+      .get('/tasks')
       .then(response => this.tasks = response.data.tasks);
   },
 };

@@ -109,8 +109,6 @@
 </v-container>
 </template>
 <script>
-import axios from 'axios';
-import settings from '@/settings';
 import rules from '@/lib/rules';
 import ImprovedTextField from '@/components/ImprovedTextField';
 import CreateQuestion from '@/components/CreateQuestion';
@@ -214,19 +212,19 @@ export default {
     saveTask() {
       this.submitted = true;
 
-      let valid = this.$refs.form.validate();
+      let isValid = this.$refs.form.validate();
       const choicesForm = this.$refs.createQuestion[this.currentQuestion-1]
         .$refs.choicesForm;
 
       if (this.questions[this.currentQuestion-1].type == 'choiceQuestion') {
         // doesn't work without duplication for some reason
         choicesForm.validate();
-        valid &&= choicesForm.validate();
+        isValid &&= choicesForm.validate();
       }
 
-      if (!valid) return;
+      if (!isValid) return;
 
-      axios.post(settings.apiUrl + '/tasks/', this.getAPIObject())
+      this.$axios.post('/tasks/', this.getAPIObject())
         .then(console.log);
 
       this.$router.push('/');
