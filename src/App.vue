@@ -29,16 +29,9 @@
 </html>
 </template>
 <script>
-import {getJSONItem} from '@/lib/localStorage';
 import NavItem from '@/components/NavItem';
 
 export default {
-  beforeCreate() {
-    const token = getJSONItem('key');
-    if (token) {
-      this.$axios.defaults.headers.common['Authorization'] = token;
-    }
-  },
   data: function () {
     return {
       title: this.$route.params.title,

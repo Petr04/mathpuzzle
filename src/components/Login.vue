@@ -49,16 +49,30 @@ export default {
     requiredRule: rules.required,
   }),
   methods: {
-    login() {
+    async login() {
+      // Тут можно добавить try/catch на всю функцию и если будет ошибка,
+      // то писать: произошла ошибка на сервере
+
       const isValid = this.$refs.form.validate();
       if (!isValid) return;
 
-      this.$axios.post('/userapi/login/', {
-        username: this.username,
-        password: this.password,
-      }).then(({data}) => {
-        this.$axios.defaults.headers.common['Authorization'] = data.token;
+      try {
+        await this.$store.dispatch('login', {
+          username: this.username,
+          password: this.password,
+        });
+      } catch (e) {
+        console.log('Упс, неловко вышло', e);
+        // Тут типа беды с аккаунтом.
+      }
+
+      console.log({
+        auth: this.$store.getters.isAuthenticated,
+        username: this.$store.state.username,
       });
+
+      await this.$store.dispatch('getUserData');
+      console.log(this.$store.state.userData);
     },
   },
 };

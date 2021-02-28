@@ -23,6 +23,22 @@
     outlined
   ></v-text-field>
   <v-text-field
+    label="Имя"
+    v-model="firstName"
+    required
+    :rules="[requiredRule()]"
+    :class="`mx-${padding}`"
+    outlined
+  ></v-text-field>
+  <v-text-field
+    label="Фамилия"
+    v-model="lastName"
+    required
+    :rules="[requiredRule()]"
+    :class="`mx-${padding}`"
+    outlined
+  ></v-text-field>
+  <v-text-field
     :type="showPassword ? 'text' : 'password'"
     label="Пароль"
     v-model="password"
@@ -65,6 +81,8 @@ export default {
 
       username: '',
       email: '',
+      firstName: '',
+      lastName: '',
       password: '',
       passwordRepeat: '',
 
@@ -85,12 +103,12 @@ export default {
       const isValid = this.$refs.form.validate();
       if (!isValid) return;
 
-      this.$axios.post('/userapi/registration/', {
+      this.$store.dispatch('register', {
         email: this.email,
         username: this.username,
         password: this.password,
-      }).then(({data}) => {
-        this.$axios.defaults.headers.common['Authorization'] = data.token;
+        first_name: this.firstName,
+        last_name: this.lastName,
       });
     }
   },
