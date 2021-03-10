@@ -30,6 +30,10 @@
   align-items: center;
 }
 
+.v-item-group {
+  overflow: visible;
+}
+
 </style>
 <script>
 import Login from '@/components/Login';

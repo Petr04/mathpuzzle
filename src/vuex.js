@@ -2,23 +2,36 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import axios from '@/plugins/axios';
+import removeHeaderFromRequest from '@/lib/removeHeaderFromRequest';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
         sessionToken: null,
+        tokenExpTime: null,
         username: null,
         userData: null,
     },
     plugins: [createPersistedState()],
     getters: {
-        isAuthenticated: state => Boolean(state.sessionToken),
+        isTokenExpired: state =>
+            !state.tokenExpTime || Math.floor(state.tokenExpTime / 1000)
+                < Math.floor(new Date().getTime() / 1000),
+        isAuthenticated: (state, getters) =>
+            Boolean(state.sessionToken)
+            && Boolean(state.username)
+            && !getters.isTokenExpired,
     },
     actions: {
         setSessionToken(context, sessionToken) {
+            const expDate = new Date();
+            expDate.setDate( expDate.getDate() + 30 );
+            context.commit('setTokenExpTime', expDate.getTime());
+
             context.commit('setSessionToken', sessionToken);
-            axios.defaults.headers.common['Authorization'] = sessionToken;
+            axios.defaults.headers.common['Authorization'] =
+                'Bearer ' + sessionToken;
         },
         async getUserData(context) {
             if (!context.state.username) return;
@@ -26,26 +39,45 @@ const store = new Vuex.Store({
                 + context.state.username);
             context.state.userData = data;
         },
-        async login(context, user) {
-            const {data} = await axios.post('/userapi/login/', user);
-            context.dispatch('setSessionToken', data.token);
-            context.commit('setUsername', user.username);
-            console.log('logged in');
+        async setUserData(context, userData) {
+            await axios.patch('/userapi/data/' +
+                context.state.username, userData);
+            context.commit('setUserData', userData);
         },
-        register(context, user) {
-            axios.post('/userapi/registration/', user).then(({data}) => {
-                context.dispatch('setSessionToken', data.token);
-                context.commit('setUsername', user.username);
-                console.log('registered');
+        async login(context, user) {
+            const {data} = await axios.post('/userapi/login/', user, {
+                transformRequest: [removeHeaderFromRequest('Authorization')]
             });
+            context.dispatch('setSessionToken', data.token);
+            context.commit('setUsername', user.get('username'));
+            context.dispatch('getUserData');
+        },
+        async register(context, user) {
+            delete axios.defaults.headers.common['Authorization'];
+            const {data} = await axios.post('/userapi/registration/', user, {
+                transformRequest: [removeHeaderFromRequest('Authorization')]
+            });
+            context.dispatch('setSessionToken', data.token);
+            context.commit('setUsername', user.get('username'));
+            context.dispatch('getUserData');
+        },
+        logout(context) {
+            context.commit('setUsername', null);
         },
     },
     mutations: {
+        // Без этого сохранение в localStorage не работает
         setSessionToken(state, sessionToken) {
             state.sessionToken = sessionToken;
         },
+        setTokenExpTime(state, tokenExpTime) {
+            state.tokenExpTime = tokenExpTime;
+        },
         setUsername(state, username) {
             state.username = username;
+        },
+        setUserData(state, userData) {
+            state.userData = userData;
         },
     },
 });

@@ -28,6 +28,7 @@
   <v-tooltip left>
     <template v-slot:activator="{ on, attrs }">
       <v-btn
+        v-if="isAuthenticated"
         to="/create/task/"
         color="red darken-2"
         fab dark
@@ -57,6 +58,7 @@
 </v-container>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import decline from '@/lib/decline';
 // import SpeedDial from '@/components/SpeedDial';
 
@@ -85,6 +87,9 @@ export default {
 
       return questions.join(this.questionsPreviewSeparator);
     }
+  },
+  computed: {
+    ...mapGetters(['isAuthenticated']),
   },
   mounted() {
     this.$axios

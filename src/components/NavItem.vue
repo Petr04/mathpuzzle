@@ -5,6 +5,7 @@
     <v-list-item
       link
       :to="item.href"
+
       v-bind="attrs"
       v-on="on"
     >

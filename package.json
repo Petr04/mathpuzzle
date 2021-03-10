@@ -10,6 +10,10 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "nan": "^2.14.2",
+    "node-gyp": "^7.1.2",
+    "svg-to-dataurl": "^1.0.0",
+    "ui-avatar-svg": "^1.0.0",
     "vue": "^2.6.11",
     "vue-mathjax": "0.0.11",
     "vue-router": "^3.4.3",

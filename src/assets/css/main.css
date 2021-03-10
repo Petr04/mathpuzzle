@@ -20,3 +20,8 @@
 }
 .flex-space-between { justify-content: space-between; }
 .flex-start { justify-content: start; }
+
+
+a {
+    text-decoration: none;
+}

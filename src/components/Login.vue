@@ -1,7 +1,6 @@
 <template>
 
 <v-form
-  action="login"
   method="POST"
   ref="form"
   @submit.prevent="login"
@@ -11,6 +10,8 @@
     v-model="username"
     required
     :rules="[requiredRule()]"
+    @blur="isRegistered"
+    :error-messages="usernameErrors"
     :class="`mx-${padding}`"
     outlined
   ></v-text-field>
@@ -20,6 +21,7 @@
     v-model="password"
     required
     :rules="[requiredRule()]"
+    :error-messages="passwordErrors"
     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
     @click:append="showPassword = !showPassword"
     :class="`mx-${padding}`"
@@ -36,6 +38,7 @@
 
 </template>
 <script>
+import axios from '@/plugins/axios';
 import rules from '@/lib/rules';
 
 export default {
@@ -46,33 +49,48 @@ export default {
     username: '',
     password: '',
 
+    usernameErrors: [],
+    passwordErrors: [],
     requiredRule: rules.required,
   }),
   methods: {
     async login() {
-      // Тут можно добавить try/catch на всю функцию и если будет ошибка,
-      // то писать: произошла ошибка на сервере
+      // Тут (как и везде) можно добавить try/catch на всю функцию
+      // и если будет ошибка, то писать: произошла ошибка на сервере
 
       const isValid = this.$refs.form.validate();
       if (!isValid) return;
 
+      const data = new FormData();
+      data.set('username', this.username);
+      data.set('password', this.password);
+
       try {
-        await this.$store.dispatch('login', {
-          username: this.username,
-          password: this.password,
-        });
+        await this.$store.dispatch('login', data);
+        this.passwordErrors = [];
+
+        await this.$store.dispatch('getUserData');
+        console.log(this.$store.state.userData);
+
+        this.$router.push('/');
       } catch (e) {
-        console.log('Упс, неловко вышло', e);
-        // Тут типа беды с аккаунтом.
+        console.log(e);
+        this.passwordErrors.push('Неверный пароль');
+      }
+    },
+    async isRegistered() {
+      if (!this.username) {
+        this.usernameErrors = [];
+        return;
       }
 
-      console.log({
-        auth: this.$store.getters.isAuthenticated,
-        username: this.$store.state.username,
-      });
-
-      await this.$store.dispatch('getUserData');
-      console.log(this.$store.state.userData);
+      const {data} = await axios.get('/userapi/is_registered/', {params: {
+        username: this.username,
+      }});
+      if (!data.is_registered)
+        this.usernameErrors.push('Неверный логин');
+      else
+        this.usernameErrors = [];
     },
   },
 };

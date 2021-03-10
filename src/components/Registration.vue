@@ -1,7 +1,6 @@
 <template>
 
 <v-form
-  action="login"
   method="POST"
   ref="form"
   @submit.prevent="register"
@@ -11,6 +10,8 @@
     v-model="username"
     required
     :rules="[requiredRule()]"
+    @blur="isRegistered('username')"
+    :error-messages="usernameErrors"
     :class="`mx-${padding}`"
     outlined
   ></v-text-field>
@@ -19,6 +20,8 @@
     v-model="email"
     required
     :rules="[requiredRule(), emailRule()]"
+    @blur="isRegistered('email')"
+    :error-messages="emailErrors"
     :class="`mx-${padding}`"
     outlined
   ></v-text-field>
@@ -27,6 +30,7 @@
     v-model="firstName"
     required
     :rules="[requiredRule()]"
+    :error-messages="firstNameErrors"
     :class="`mx-${padding}`"
     outlined
   ></v-text-field>
@@ -35,6 +39,7 @@
     v-model="lastName"
     required
     :rules="[requiredRule()]"
+    :error-messages="lastNameErrors"
     :class="`mx-${padding}`"
     outlined
   ></v-text-field>
@@ -71,7 +76,9 @@
 
 </template>
 <script>
+import axios from '@/plugins/axios';
 import rules from '@/lib/rules';
+import camelToSnakeCase from '@/lib/camelToSnakeCase';
 
 export default {
   props: ['padding'],
@@ -79,6 +86,7 @@ export default {
     return {
       showPassword: false,
 
+      // Лучше это поместить в объект
       username: '',
       email: '',
       firstName: '',
@@ -86,31 +94,57 @@ export default {
       password: '',
       passwordRepeat: '',
 
+      usernameErrors: [],
+      emailErrors: [],
+      firstNameErrors: [],
+      lastNameErrors: [],
+
       requiredRule: rules.required,
       emailRule: rules.email,
       passwordRules: [
         s => Boolean(s) || 'Введите пароль',
-        s => s.length <= 8 || 'Пароль должен быть длиннее 8 символов',
+        s => s.length >= 8 || 'Пароль должен быть длиннее 8 символов',
       ],
       passwordRepeatRules: [
         s => Boolean(s) || 'Повторите пароль',
         s => s == this.password || 'Пароли не совпадают',
       ],
-    }
+    };
   },
   methods: {
-    register() {
+    async register() {
       const isValid = this.$refs.form.validate();
       if (!isValid) return;
 
-      this.$store.dispatch('register', {
-        email: this.email,
-        username: this.username,
-        password: this.password,
-        first_name: this.firstName,
-        last_name: this.lastName,
-      });
-    }
+      const data = new FormData();
+      const fields = [
+        'email', 'username', 'password',
+        'firstName', 'lastName',
+      ];
+      for (let field of fields) {
+        data.set( camelToSnakeCase(field), this[field] );
+      }
+
+      this.$store.dispatch('register', data)
+      this.$router.push('/')
+    },
+    async isRegistered(field) {
+      if (!this[field]) {
+        this[field + 'Errors'] = [];
+        return;
+      }
+
+      const {data} = await axios.get('/userapi/is_registered/', {params: {
+        [field]: this[field],
+      }});
+      if (data.is_registered) {
+        this[field + 'Errors'].push(
+          `Пользователь с таким ${field == 'username' ? 'логином' : field}`
+          + ` уже зарегистрирован`
+        );
+      } else
+        this[field + 'Errors'] = [];
+    },
   },
 };
 
