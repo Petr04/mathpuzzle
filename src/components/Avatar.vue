@@ -1,7 +1,7 @@
 <template>
 
 <v-img
-  :src="url"
+  :src="getUrl"
   :max-width="size"
   :max-height="size"
 ></v-img>
@@ -26,19 +26,21 @@ function getSvg(text, size, colorBase) {
 
 export default {
   props: ['size'],
-  data() {
-    const text = this.$store.state.userData.first_name[0]
-      + this.$store.state.userData.last_name[0];
-    return {
-      url: svgToDataURL(getSvg(
-        text, 64, this.$store.state.userData.email)),
-    };
-  },
+  data: () => ({
+  }),
   computed: {
-    ...mapState(['userData']),
-  },
-  methods: {
-    stringToColor,
+    ...mapState([
+      'username', 'email',
+      'firstName', 'lastName',
+    ]),
+    getUrl() {
+      const text = this.$store.state.firstName[0]
+        + this.$store.state.lastName[0];
+      const url = svgToDataURL(getSvg(
+        text, 64, this.$store.state.email));
+
+      return url;
+    },
   },
 };
 

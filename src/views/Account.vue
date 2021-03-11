@@ -1,11 +1,12 @@
 <template>
 <v-container>
 
-<v-card outlined class="mb-3">
+<!-- outlined -->
+<v-card elevation="0" class="mb-3">
   <v-card-title>
     <div class="horizontal-space-between">
       <div class="horizontal">
-        <avatar size="64" class="mr-4"/>
+        <avatar v-if="isAuthenticated" size="64" class="mr-4"/>
         <div
           class="text-h4"
           color='grey darken-4'
@@ -49,18 +50,20 @@
 
 </style>
 <script>
-import {mapState} from 'vuex';
+import {mapState, mapGetters} from 'vuex';
 import Avatar from '@/components/Avatar';
 
 export default {
   components: { Avatar },
-  created () {
+  mounted () {
     if (!this.$store.getters.isAuthenticated)
       this.$router.push('login/');
   },
   data() {
     return {
-      text: `${this.$store.state.userData.first_name} ${this.$store.state.userData.last_name}`,
+      text: !this.$store.getters.isAuthenticated
+        || `${this.$store.state.firstName}`
+          +` ${this.$store.state.lastName}`,
     };
   },
   methods: {
@@ -70,7 +73,11 @@ export default {
     },
   },
   computed: {
-    ...mapState(['userData']),
+    ...mapGetters(['isAuthenticated']),
+    ...mapState([
+      'username', 'email',
+      'firstName', 'lastName',
+    ]),
   },
 };
 

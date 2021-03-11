@@ -69,8 +69,9 @@ export default {
         await this.$store.dispatch('login', data);
         this.passwordErrors = [];
 
-        await this.$store.dispatch('getUserData');
-        console.log(this.$store.state.userData);
+        console.log(this.$store.getters.userData,
+          this.$store.state.firstName, this.$store.state.lastName,
+        );
 
         this.$router.push('/');
       } catch (e) {

@@ -10,8 +10,12 @@ const store = new Vuex.Store({
     state: {
         sessionToken: null,
         tokenExpTime: null,
+
+        userDataReceived: false,
         username: null,
-        userData: null,
+        email: null,
+        firstName: null,
+        lastName: null,
     },
     plugins: [createPersistedState()],
     getters: {
@@ -21,7 +25,14 @@ const store = new Vuex.Store({
         isAuthenticated: (state, getters) =>
             Boolean(state.sessionToken)
             && Boolean(state.username)
-            && !getters.isTokenExpired,
+            && !getters.isTokenExpired
+            && state.userDataReceived,
+        userData: state => ({
+            username: state.username,
+            email: state.email,
+            first_name: state.firstName,
+            last_name: state.lastName,
+        }),
     },
     actions: {
         setSessionToken(context, sessionToken) {
@@ -37,7 +48,7 @@ const store = new Vuex.Store({
             if (!context.state.username) return;
             const {data} = await axios.get('/userapi/data/'
                 + context.state.username);
-            context.state.userData = data;
+            context.commit('setUserData', data);
         },
         async setUserData(context, userData) {
             await axios.patch('/userapi/data/' +
@@ -50,7 +61,7 @@ const store = new Vuex.Store({
             });
             context.dispatch('setSessionToken', data.token);
             context.commit('setUsername', user.get('username'));
-            context.dispatch('getUserData');
+            await context.dispatch('getUserData');
         },
         async register(context, user) {
             delete axios.defaults.headers.common['Authorization'];
@@ -59,7 +70,7 @@ const store = new Vuex.Store({
             });
             context.dispatch('setSessionToken', data.token);
             context.commit('setUsername', user.get('username'));
-            context.dispatch('getUserData');
+            await context.dispatch('getUserData');
         },
         logout(context) {
             context.commit('setUsername', null);
@@ -73,11 +84,16 @@ const store = new Vuex.Store({
         setTokenExpTime(state, tokenExpTime) {
             state.tokenExpTime = tokenExpTime;
         },
+
         setUsername(state, username) {
             state.username = username;
         },
-        setUserData(state, userData) {
-            state.userData = userData;
+        setUserData(state, data) {
+            state.email = data.email;
+            state.firstName = data.first_name;
+            state.lastName = data.last_name;
+
+            state.userDataReceived = true;
         },
     },
 });
