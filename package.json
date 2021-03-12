@@ -16,6 +16,7 @@
     "ui-avatar-svg": "^1.0.0",
     "vue": "^2.6.11",
     "vue-mathjax": "0.0.11",
+    "vue-meta": "^2.4.0",
     "vue-router": "^3.4.3",
     "vuetify": "^2.2.11",
     "vuex": "^3.6.2",

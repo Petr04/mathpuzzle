@@ -66,6 +66,10 @@ import NavItem from '@/components/NavItem';
 import Avatar from '@/components/Avatar';
 
 export default {
+  metaInfo: {
+    title: 'Задания',
+    titleTemplate: '%s | SciPuzzle',
+  },
   mounted() {
     if (this.$store.state.sessionToken) {
       axios.defaults.headers.common['Authorization'] =

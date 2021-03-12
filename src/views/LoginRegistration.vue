@@ -41,22 +41,35 @@ import Registration from '@/components/Registration';
 
 export default {
   components: {Login, Registration},
-  data: function () {
+  data() {
     const action = this.$route.params.action;
     const actions = ['login', 'registration'];
-    const currentTab = actions.indexOf(action);
-    if (currentTab == -1) currentTab == 0;
+    this.actions = actions;
+    let currentTab = actions.indexOf(action);
+    if (currentTab == -1) {
+      currentTab = 0;
+      this.replaceUrl(currentTab);
+    }
 
     return {
       padding: 5,
 
-      actions: actions,
       currentTab: currentTab,
     };
   },
-  watch: {
-    currentTab: function (val) {
+  metaInfo() {
+    return {
+      title: this.currentTab == 0 ? 'Вход' : 'Регистрация',
+    };
+  },
+  methods: {
+    replaceUrl(val) {
       this.$router.replace(`/account/${this.actions[val]}/`);
+    },
+  },
+  watch: {
+    currentTab(val) {
+      this.replaceUrl(val);
     }
   },
 }

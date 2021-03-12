@@ -99,6 +99,11 @@ export default {
       questionRefs: null,
     }
   },
+  metaInfo() {
+    return {
+      title: this.task ? this.task.title : 'Задание',
+    };
+  },
   methods: {
     onStatusChange(i, val) {
       this.statuses[i] = val;

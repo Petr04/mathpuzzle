@@ -66,6 +66,11 @@ export default {
           +` ${this.$store.state.lastName}`,
     };
   },
+  metaInfo() {
+    return {
+      title: `${this.firstName} ${this.lastName} | Личный кабинет`,
+    };
+  },
   methods: {
     logout() {
       this.$store.dispatch('logout');

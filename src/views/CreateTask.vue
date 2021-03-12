@@ -154,6 +154,9 @@ export default {
     CreateQuestion,
     ImprovedTextField,
   },
+  metaInfo:{
+    title: 'Новое задание',
+  },
   data() {
     return {
       questions: [
