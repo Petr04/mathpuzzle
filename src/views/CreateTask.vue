@@ -75,7 +75,6 @@
         >
           <CreateQuestion
             ref="createQuestion"
-            :submitted="submitted"
             :question="question"
           />
         </v-tab-item>

@@ -39,7 +39,7 @@
   required
 ></improved-text-field>
 <template v-else-if="question.type == 'choiceQuestion'">
-  <v-radio-group v-model="question.answer">
+  <v-radio-group v-model="question.answer" mandatory>
     <v-form ref="choicesForm">
       <improved-text-field
         v-for="(choice, i) in question.choices"
@@ -72,12 +72,6 @@
     ><v-icon>mdi-plus</v-icon></v-btn>
 
   </v-radio-group>
-  <v-alert
-    :value="question.answer == null && submitted"
-    type="error"
-  >
-    Выберите правильный вариант ответа
-  </v-alert>
 </template>
 <div class="flex-start">
   <v-checkbox
@@ -106,7 +100,7 @@ const typesLabels = {
 };
 
 export default {
-  props: ['question', 'submitted'],
+  props: ['question'],
   components: {ImprovedTextField},
   data: () => ({
     rules,
