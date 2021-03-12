@@ -117,7 +117,6 @@ class Question {
   constructor() {
     this.title = '';
     this.text = '';
-    this.check_on_submit = false;
     this.type = 'textQuestion';
     this.attempts = 1;
     this.answer = null;

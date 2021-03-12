@@ -84,10 +84,11 @@
     v-model="restrictAttempts"
     class="mr-3"
   ></v-checkbox>
+    <!-- @input="val => question.attempts = val" -->
   <v-text-field
     :value="restrictAttempts ? question.attempts : ''"
-    @input="val => question.attempts = val"
     :disabled="!restrictAttempts"
+    v-model="attempts"
     type="number"
     label="Ограничить количество попыток"
   ></v-text-field>
@@ -110,14 +111,30 @@ export default {
   data: () => ({
     rules,
     typesLabels,
+    attempts: 1,
     restrictAttempts: false,
   }),
+  mounted() {
+    this.question.attempts = 0;
+  },
   methods: {
     createChoice() {
       if (!this.question.choices.includes(''))
         this.question.choices.push('');
 
       this.$refs.choicesForm.validate();
+    },
+  },
+  computed: {
+    finalAttempts() {
+      if (!this.restrictAttempts) return 0;
+      return this.attempts;
+    }
+  },
+  watch: {
+    finalAttempts(val) {
+      console.log(val);
+      this.question.attempts = val;
     },
   },
 };
