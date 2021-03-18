@@ -50,17 +50,33 @@
           outlined
         >
           <div class="flex-space-between">
-            <v-btn
-              fab dark small
-              depressed
-              color="red"
-              class="mr-1"
-              @click="createQuestion"
-            ><v-icon>mdi-plus</v-icon></v-btn>
-            <v-btn
-              fab small icon
-              @click="removeQuestion"
-            ><v-icon>mdi-close</v-icon></v-btn>
+            <v-tooltip top
+              v-for="(button, i) in createButtons"
+              :key="i"
+            >
+              <!-- Допилить чтобы подстраивались размеры -->
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  fab small icon
+                  @click="createQuestion(button.type)"
+                  :class="i < createButtons.length-1
+                    || questions.length > 0 || true ? 'mr-1' : ''"
+
+                  v-bind="attrs"
+                  v-on="on"
+                ><v-icon>{{ button.icon }}</v-icon></v-btn>
+              </template>
+              <span>{{ button.label }}</span>
+            </v-tooltip>
+            <v-fab-transition>
+              <v-btn
+                v-if="questions.length > 0 || true"
+                fab dark small
+                depressed
+                color="red"
+                @click="removeQuestion"
+              ><v-icon>mdi-close</v-icon></v-btn>
+            </v-fab-transition>
           </div>
         </v-card>
 
@@ -73,7 +89,7 @@
           v-for="(question, i) in questions"
           :key="i"
         >
-          <CreateQuestion
+          <create-question-wrapper
             ref="createQuestion"
             :question="question"
           />
@@ -84,8 +100,8 @@
     <v-switch
       v-model="taskData.check_on_submit"
       label="Проверять при отправлении"
-      hint="Показывать правильность решения каждого вопроса только после отправления
-        всего задания"
+      hint="Показывать правильность решения каждого вопроса только после
+        отправления всего задания"
       persistent-hint
     ></v-switch>
   </div>
@@ -110,19 +126,29 @@
 <script>
 import rules from '@/lib/rules';
 import ImprovedTextField from '@/components/ImprovedTextField';
-import CreateQuestion from '@/components/CreateQuestion';
+import CreateQuestionWrapper from '@/components/CreateQuestionWrapper';
 
 class Question {
   constructor() {
     this.title = '';
-    this.text = '';
-    this.type = 'textQuestion';
     this.attempts = 1;
+  }
+}
+
+class TextQuestion extends Question {
+  constructor() {
+    super();
+    this.type = 'textQuestion';
     this.answer = null;
+    this.text = '';
     this.choices = ['', ''];
+
+    Object.defineProperty(this, 'answers', {
+        get: this.answers,
+    });
   }
 
-  get answers() {
+  answers() {
     if (this.answer == null || this.answer === '') {
       return null;
     }
@@ -147,12 +173,25 @@ class Question {
   }
 }
 
+class OrderQuestion extends Question {
+  constructor() {
+    super();
+    this.type = 'orderQuestion';
+    this.elems = ['', ''];
+  }
+}
+
+const typeToClass = {
+  textQuestion: TextQuestion,
+  orderQuestion: OrderQuestion,
+};
+
 export default {
   components: {
-    CreateQuestion,
+    CreateQuestionWrapper,
     ImprovedTextField,
   },
-  metaInfo:{
+  metaInfo: {
     title: 'Новое задание',
   },
   data() {
@@ -164,6 +203,19 @@ export default {
         check_on_submit: false,
       },
 
+      createButtons: [
+        {
+          icon: 'mdi-text',
+          type: 'textQuestion',
+          label: 'Текстовый вопрос'
+        },
+        {
+          icon: 'mdi-format-list-numbered',
+          type: 'orderQuestion',
+          label: 'Вопрос на сортировку',
+        },
+      ].reverse(),
+
       rules,
       submitted: false,
 
@@ -173,8 +225,13 @@ export default {
     };
   },
   methods: {
-    createQuestion() {
-      this.questions.push(new Question());
+    createQuestion(type) {
+      if (this.questions.length != 0) {
+        const forms = this.$refs.createQuestion;
+        if (!forms[forms.length-1].validate())
+          return;
+      }
+      this.questions.push(new typeToClass[type]);
       setTimeout(() => this.currentQuestion = this.questions.length);
     },
     removeQuestion() {
@@ -203,9 +260,7 @@ export default {
       ret.questions = [];
 
       for (let question of this.questions) {
-        ret.questions.push(Object.assign({},
-          question, {answers: question.answers}
-        ));
+        ret.questions.push(question);
       }
 
       return {task: ret};
@@ -213,17 +268,7 @@ export default {
     saveTask() {
       this.submitted = true;
 
-      let isValid = this.$refs.form.validate();
-      const choicesForm = this.$refs.createQuestion[this.currentQuestion-1]
-        .$refs.choicesForm;
-
-      if (this.questions[this.currentQuestion-1].type == 'choiceQuestion') {
-        // doesn't work without duplication for some reason
-        choicesForm.validate();
-        isValid &&= choicesForm.validate();
-      }
-
-      if (!isValid) return;
+      if (!this.$refs.form.validate()) return;
 
       this.$axios.post('/tasks/', this.getAPIObject())
         .then(console.log);
@@ -238,9 +283,6 @@ export default {
       slideGroup.style['max-width'] =
         `${stepperHeader.clientWidth - buttons.offsetWidth}px`;
     },
-    onResize() {
-      this.setSlideGroupMaxWidth();
-    },
   },
   watch: {
     currentQuestion(newValue, oldValue) {
@@ -249,13 +291,13 @@ export default {
     },
   },
   created() {
-    window.addEventListener("resize", this.onResize);
+    window.addEventListener("resize", this.setSlideGroupMaxWidth);
   },
   destroyed() {
-    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("resize", this.setSlideGroupMaxWidth);
   },
   mounted() {
-    this.setSlideGroupMaxWidth();
+    setTimeout(() => this.setSlideGroupMaxWidth());
   },
 };
 </script>

@@ -4,6 +4,7 @@
   v-model="input"
 
   :dense="dense"
+  :outlined="outlined"
   :label="label"
   :disabled="disabled"
 
@@ -34,7 +35,7 @@ export default {
   extends: VTextField,
   props: [
     'value',
-    'label', 'dense', 'type', 'disabled',
+    'label', 'dense', 'type', 'disabled', 'outlined',
 
     'required',
     'maxLength',
