@@ -1,0 +1,6 @@
+.ghost {
+  opacity: 0.5;
+}
+.handle {
+  cursor: grab;
+}

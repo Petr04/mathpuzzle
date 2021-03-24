@@ -1,7 +1,6 @@
 <template>
 <v-container>
 
-<h2 v-if="question.title" class="mb-3">{{ question.title }}</h2>
 <mathjax
   :formula="question.text"
 ></mathjax>
@@ -59,7 +58,7 @@
     type="submit"
     :disabled="empty || readonly"
     color="blue darken-2"
-    :dark="!empty"
+    :dark="!(empty || readonly)"
     :loading="status == StatusEnum.checking"
     class="transition mt-3"
   >Отправить</v-btn>

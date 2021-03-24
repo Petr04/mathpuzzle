@@ -1,5 +1,13 @@
 <template>
 <v-container>
+  <v-textarea
+    label="Текст вопроса"
+    v-model="question.text"
+    :rules="[rules.required()]"
+    required
+    auto-grow
+    outlined
+  ></v-textarea>
   <v-form ref="form">
     <draggable
       handle=".handle"
@@ -35,6 +43,8 @@
 </template>
 
 <script>
+import '@/assets/css/draggable.css';
+import rules from '@/lib/rules';
 import ImprovedTextField from '@/components/ImprovedTextField';
 import Draggable from 'vuedraggable';
 
@@ -46,6 +56,7 @@ export default {
   },
   data() {
     return {
+      rules,
       dragging: false,
       dragOptions: {
         animation: 200,
@@ -71,11 +82,3 @@ export default {
   },
 }
 </script>
-<style>
-.ghost {
-  opacity: 0.5;
-}
-.handle {
-  cursor: grab;
-}
-</style>

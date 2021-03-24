@@ -177,6 +177,7 @@ class OrderQuestion extends Question {
   constructor() {
     super();
     this.type = 'orderQuestion';
+    this.text = '';
     this.elems = ['', ''];
   }
 }

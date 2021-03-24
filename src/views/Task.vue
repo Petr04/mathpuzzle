@@ -41,14 +41,29 @@
         :key="i"
         :step="i+1"
       >
-        <Question
-          ref="question"
-          :key="i"
+        <div class="mx-3">
+          <h2 v-if="question.title" class="mb-3">{{ question.title }}</h2>
+          <text-question
+            v-if="['textQuestion', 'choiceQuestion'].includes(question.type)"
+            ref="question"
+            :key="i"
+            class="pa-0"
 
-          :question="question"
-          :check_on_submit="task.check_on_submit"
-          @statusChange="val => onStatusChange(i, val)"
-        />
+            :question="question"
+            :check_on_submit="task.check_on_submit"
+            @statusChange="val => onStatusChange(i, val)"
+          />
+          <order-question
+            v-if="question.type == 'orderQuestion'"
+            ref="question"
+            :key="i"
+            class="pa-0"
+
+            :question="question"
+            :check_on_submit="task.check_on_submit"
+            @statusChange="val => onStatusChange(i, val)"
+          />
+        </div>
       </v-stepper-content>
       <v-stepper-content :step="task.questions.length+1">
         <template v-if="task.check_on_submit">
@@ -79,11 +94,13 @@
 </template>
 <script>
 import {StatusEnum} from '@/consts';
-import Question from '@/components/Question';
+import TextQuestion from '@/components/TextQuestion';
+import OrderQuestion from '@/components/OrderQuestion';
 
 export default {
   components: {
-    Question,
+    TextQuestion,
+    OrderQuestion,
   },
   data() {
     return {
@@ -154,6 +171,17 @@ export default {
       .get('/tasks/' + this.$route.params.id)
       .then(response => {
         this.task = response.data;
+        this.task.questions.push({
+          "title":"Сортировка",
+          "attempts":1,
+          "type":"orderQuestion",
+          "elems":["4",String.raw`$$\sqrt{5}$$`],
+          "text": "Отсортируйте выражения по возрастанию. Какая-то формула: "
+            + String.raw`$$\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$. Ещё одна: `
+            + String.raw`$$c^2 = a^2 + b^2$$. `
+            + "Правильность решения задания отображается неверно, так как "
+            + "серверная часть ещё не готова.",
+        }); // demo
         this.statuses = Array(this.task.questions.length).fill(StatusEnum.default);
       });
     this.questionRefs = this.$refs.question;
