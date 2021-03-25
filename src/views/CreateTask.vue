@@ -144,32 +144,30 @@ class TextQuestion extends Question {
     this.choices = ['', ''];
 
     Object.defineProperty(this, 'answers', {
-        get: this.answers,
-    });
-  }
-
-  answers() {
-    if (this.answer == null || this.answer === '') {
-      return null;
-    }
-    else if (this.type == 'textQuestion') {
-      return [{
-        text: this.answer,
-        answer_num: 0,
-        is_true: true,
-      }];
-    } else if (this.type == 'choiceQuestion') {
-      const ret = [];
-      for (let [i, choice] of this.choices.entries()) {
-        ret.push({
-          text: choice,
-          answer_num: i,
-          is_true: i == this.answer,
-        });
+      get: function () {
+        if (this.answer == null || this.answer === '') {
+          return null;
+        }
+        else if (this.type == 'textQuestion') {
+          return [{
+            text: this.answer,
+            answer_num: 0,
+            is_true: true,
+          }];
+        } else if (this.type == 'choiceQuestion') {
+          const ret = [];
+          for (let [i, choice] of this.choices.entries()) {
+            ret.push({
+              text: choice,
+              answer_num: i,
+              is_true: i == this.answer,
+            });
+          }
+          return ret;
+        }
+        return null;
       }
-      return ret;
-    }
-    return null;
+    });
   }
 }
 
@@ -261,7 +259,13 @@ export default {
       ret.questions = [];
 
       for (let question of this.questions) {
-        ret.questions.push(question);
+        if (question.answers) {
+          ret.questions.push(Object.assign({},
+            question, {answers: question.answers}
+          ));
+        } else {
+          ret.questions.push(question);
+        }
       }
 
       return {task: ret};
