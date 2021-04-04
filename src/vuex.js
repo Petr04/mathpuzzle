@@ -44,6 +44,17 @@ const store = new Vuex.Store({
             axios.defaults.headers.common['Authorization'] =
                 'Bearer ' + sessionToken;
         },
+        removeSessionToken(context) {
+            context.commit('setSessionToken', null);
+            context.commit('setTokenExpTime', null);
+
+            delete axios.defaults.headers.common['Authorization'];
+        },
+        removeTokenIfWrong(context) {
+            if (!context.getters.isAuthenticated) {
+                context.dispatch('removeSessionToken');
+            }
+        },
         async getUserData(context) {
             if (!context.state.username) return;
             const {data} = await axios.get('/userapi/data/'
@@ -74,6 +85,7 @@ const store = new Vuex.Store({
         },
         logout(context) {
             context.commit('setUsername', null);
+            context.dispatch('removeSessionToken');
         },
     },
     mutations: {

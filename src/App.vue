@@ -76,6 +76,8 @@ export default {
         'Bearer ' + this.$store.state.sessionToken;
     }
 
+    this.$store.dispatch('removeTokenIfWrong');
+
     console.log(
       this.$store.state.sessionToken,
       this.$store.state.username,
