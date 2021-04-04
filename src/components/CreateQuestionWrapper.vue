@@ -23,7 +23,7 @@
     />
 
     <restrict-attempts
-      @input="val => question.attempts = val"
+      @input="val => question.attempts_max = val"
     />
   </div>
 </v-form>

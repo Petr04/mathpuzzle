@@ -131,7 +131,7 @@ import CreateQuestionWrapper from '@/components/CreateQuestionWrapper';
 class Question {
   constructor() {
     this.title = '';
-    this.attempts = 1;
+    this.attempts_max = 1;
   }
 }
 

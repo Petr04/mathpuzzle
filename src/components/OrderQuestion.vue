@@ -78,9 +78,9 @@ export default {
 
       status: StatusEnum.default,
       attempts: 0,
-      attemptsMax: this.question.attempts == 0
+      attemptsMax: this.question.attempts_max == 0
         ? Infinity
-        : this.question.attempts,
+        : this.question.attempts_max,
     };
   },
   methods: {
