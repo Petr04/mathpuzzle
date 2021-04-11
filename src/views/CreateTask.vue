@@ -275,9 +275,8 @@ export default {
 
       if (!this.$refs.form.validate()) return;
 
-      // this.$axios.post('/tasks/', this.getAPIObject())
-      //   .then(console.log);
-      console.log(this.getAPIObject());
+      this.$axios.post('/tasks/', this.getAPIObject())
+        .then(console.log);
 
       this.$router.push('/');
     },

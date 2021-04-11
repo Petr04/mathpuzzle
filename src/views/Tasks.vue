@@ -25,10 +25,9 @@
     :items="items"
   />
    -->
-  <v-tooltip left>
+  <v-tooltip v-if="isAuthenticated" left>
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        v-if="isAuthenticated"
         to="/create/task/"
         color="red darken-2"
         fab dark
