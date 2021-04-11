@@ -6,9 +6,8 @@
     class="mr-3"
   ></v-checkbox>
   <v-text-field
-    :value="restrictAttempts ? attempts : ''"
-    :disabled="!restrictAttempts"
     v-model="attempts"
+    :disabled="!restrictAttempts"
     type="number"
     label="Ограничить количество попыток"
   ></v-text-field>

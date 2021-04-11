@@ -90,7 +90,7 @@ export default {
     typesLabels,
   }),
   mounted() {
-    this.question.attempts = 0;
+    this.question.attempts_max = 0;
   },
   methods: {
     createChoice() {
