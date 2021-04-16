@@ -9,8 +9,13 @@
     :class="'mb-' + margin"
     outlined
   >
-    <v-card-title>{{ task.title }}</v-card-title>
-    <v-card-subtitle>
+    <div class="flex-space-between">
+      <v-card-title>{{ task.title }}</v-card-title>
+      <div class="mr-3 grey--text text--darken-1" v-text="authorStr(task)">
+      </div>
+    </div>
+
+    <v-card-subtitle class="mt-n8 subtitle-1">
       <!-- {{ task.questions.length }} -->
       <!-- {{ decline('вопрос', 2, task.questions.length) }}<br> -->
       {{ getQuestionsPreview(task.questions) }}
@@ -58,6 +63,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import authorStr from '@/lib/authorStr';
 import decline from '@/lib/decline';
 // import SpeedDial from '@/components/SpeedDial';
 
@@ -85,7 +91,8 @@ export default {
       }
 
       return questions.join(this.questionsPreviewSeparator);
-    }
+    },
+    authorStr,
   },
   computed: {
     ...mapGetters(['isAuthenticated']),

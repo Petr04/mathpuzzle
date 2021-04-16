@@ -1,7 +1,12 @@
 <template>
 <v-container>
 <template v-if="task">
-  <h1 class="mb-6">{{ task.title }}</h1>
+  <h1>{{ task.title }}</h1>
+  <div
+    class="subtitle-1 mr-3 mb-6 grey--text text--darken-1"
+    v-text="authorStr()"
+  >
+  </div>
 
   <v-stepper
     v-model="currentQuestion"
@@ -94,6 +99,7 @@
 </template>
 <script>
 import {StatusEnum} from '@/consts';
+import authorStrFunc from '@/lib/authorStr';
 import TextQuestion from '@/components/TextQuestion';
 import OrderQuestion from '@/components/OrderQuestion';
 
@@ -164,6 +170,9 @@ export default {
 
       this.autoPageSwitch = false;
       this.currentQuestion = 1;
+    },
+    authorStr() {
+      return authorStrFunc.call(this, this.task);
     },
   },
   mounted() {
