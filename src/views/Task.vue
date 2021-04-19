@@ -2,10 +2,41 @@
 <v-container>
 <template v-if="task">
   <h1>{{ task.title }}</h1>
-  <div
-    class="subtitle-1 mr-3 mb-6 grey--text text--darken-1"
-    v-text="authorStr()"
-  >
+  <div class="flex-start pb-3">
+    <span
+      class="subtitle-1 grey--text text--darken-1"
+      v-text="authorStr()"
+    >
+    </span>
+    <v-dialog
+      v-model="showAttempts"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-if="imAuthor"
+          small class="ml-3"
+          v-bind="attrs"
+          v-on="on"
+        >Показать решения</v-btn>
+      </template>
+
+      <v-card>
+        <v-toolbar flat>
+          <v-btn
+            icon
+            @click="showAttempts=false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <attempts-table
+          :task="task"
+        />
+      </v-card>
+    </v-dialog>
   </div>
 
   <v-stepper
@@ -88,7 +119,6 @@
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
-
 </template>
 <v-skeleton-loader
   v-else
@@ -102,11 +132,13 @@ import {StatusEnum} from '@/consts';
 import authorStrFunc from '@/lib/authorStr';
 import TextQuestion from '@/components/TextQuestion';
 import OrderQuestion from '@/components/OrderQuestion';
+import AttemptsTable from '@/components/AttemptsTable';
 
 export default {
   components: {
     TextQuestion,
     OrderQuestion,
+    AttemptsTable,
   },
   data() {
     return {
@@ -116,6 +148,7 @@ export default {
       questionSwitched: true,
       nextQuestionTimeout: 1000,
       autoPageSwitch: true,
+      showAttempts: false,
 
       StatusEnum,
       statuses: null,
@@ -173,6 +206,11 @@ export default {
     },
     authorStr() {
       return authorStrFunc.call(this, this.task);
+    },
+  },
+  computed: {
+    imAuthor() {
+      return this.task.author.email == this.$store.state.email;
     },
   },
   mounted() {
