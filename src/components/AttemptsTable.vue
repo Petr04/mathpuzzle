@@ -4,7 +4,16 @@
   v-if="items"
   :headers="headers"
   :items="items"
+  :search="search"
+  :hide-default-footer="true"
+  :disable-pagination="true"
 >
+  <template v-slot:no-data>
+    Пока никто не пытался решить это задание
+  </template>
+  <template v-slot:no-results>
+    Поиск не дал результатов
+  </template>
   <template
     v-for="i in templateNames"
     v-slot:[i.templateName]="{ item }"
@@ -28,7 +37,16 @@
 import axios from '@/plugins/axios';
 
 export default {
-  props: ['task'],
+  props: {
+    task: {
+      type: Object,
+      required: true,
+    },
+    search: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       items: null,
@@ -64,6 +82,9 @@ export default {
 
       return ret;
     },
+    updateAttempts() {
+      this.getTaskAttempts().then(ret => this.items = ret);
+    }
   },
   computed: {
     templateNames: function () {
@@ -78,7 +99,7 @@ export default {
     },
   },
   mounted() {
-    this.getTaskAttempts().then(ret => this.items = ret);
+    this.updateAttempts();
   },
 };
 

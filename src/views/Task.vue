@@ -29,11 +29,45 @@
             icon
             @click="showAttempts=false"
           >
-            <v-icon>mdi-close</v-icon>
+            <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                @click="updateAttempts"
+
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>mdi-update</v-icon>
+              </v-btn>
+            </template>
+            <span>Обновить попытки</span>
+          </v-tooltip>
+
+          <v-text-field
+            v-model="attemptsSearch"
+            class="mx-4 rounded-lg"
+            style="max-width: 400px;"
+            hide-details single-line solo
+            :flat="!searchFocused"
+            @focus="searchFocused = true"
+            @blur="searchFocused = false"
+            :background-color="searchFocused
+              ? '' : 'grey lighten-3'"
+            label="Поиск"
+            prepend-inner-icon="mdi-magnify"
+            :clearable="true"
+            clear-icon="mdi-close"
+          ></v-text-field>
+
         </v-toolbar>
         <attempts-table
+          ref="attemptsTable"
           :task="task"
+          :search="attemptsSearch"
         />
       </v-card>
     </v-dialog>
@@ -149,6 +183,8 @@ export default {
       nextQuestionTimeout: 1000,
       autoPageSwitch: true,
       showAttempts: false,
+      attemptsSearch: '',
+      searchFocused: false,
 
       StatusEnum,
       statuses: null,
@@ -161,6 +197,9 @@ export default {
     };
   },
   methods: {
+    updateAttempts() {
+      this.$refs.attemptsTable.updateAttempts();
+    },
     onStatusChange(i, val) {
       this.statuses[i] = val;
 
@@ -186,6 +225,8 @@ export default {
 
         }, this.nextQuestionTimeout);
       }
+
+      this.updateAttempts();
     },
     nextUnsolvedQuestion(questionNumber) {
       let i;
@@ -218,17 +259,17 @@ export default {
       .get('/tasks/' + this.$route.params.id)
       .then(response => {
         this.task = response.data;
-        this.task.questions.push({
-          "title":"Сортировка",
-          "attempts":1,
-          "type":"orderQuestion",
-          "elems":["4",String.raw`$$\sqrt{5}$$`],
-          "text": "Отсортируйте выражения по возрастанию. Какая-то формула: "
-            + String.raw`$$\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$. Ещё одна: `
-            + String.raw`$$c^2 = a^2 + b^2$$. `
-            + "Правильность решения задания отображается неверно, так как "
-            + "серверная часть ещё не готова.",
-        }); // demo
+        // this.task.questions.push({
+        //   "title":"Сортировка",
+        //   "attempts":1,
+        //   "type":"orderQuestion",
+        //   "elems":["4",String.raw`$$\sqrt{5}$$`],
+        //   "text": "Отсортируйте выражения по возрастанию. Какая-то формула: "
+        //     + String.raw`$$\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$. Ещё одна: `
+        //     + String.raw`$$c^2 = a^2 + b^2$$. `
+        //     + "Правильность решения задания отображается неверно, так как "
+        //     + "серверная часть ещё не готова.",
+        // }); // demo
         this.statuses = Array(this.task.questions.length).fill(StatusEnum.default);
       });
     this.questionRefs = this.$refs.question;
