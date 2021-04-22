@@ -10,6 +10,7 @@
     </span>
     <v-dialog
       v-model="showAttempts"
+      eager
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
