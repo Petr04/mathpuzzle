@@ -33,14 +33,14 @@ export function attemptsLeft() {
     return this.attemptsMax - this.attempts;
 }
 
-export function attemptMessages() {
+export function attemptMessage() {
     if (this.attemptsMax == Infinity)
-        return [];
+        return '';
 
-    return [this.attemptsLeft
+    return this.attemptsLeft
         ? `Остал${this.attemptsLeft == 1 ? 'а' : 'о'}сь `
             + this.attemptsLeft + ' '
             + this.decline('попытка', 1, this.attemptsLeft, 'и')
         : 'Не осталось попыток'
-    ];
+    ;
 }

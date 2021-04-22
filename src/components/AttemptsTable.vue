@@ -34,7 +34,6 @@
 
 </template>
 <script>
-import axios from '@/plugins/axios';
 
 export default {
   props: {
@@ -61,7 +60,7 @@ export default {
   },
   methods: {
     async getTaskAttempts() {
-      const response = await axios.get('/tasks/attempts/', {params: {
+      const response = await this.$axios.get('/tasks/attempts/', {params: {
         task: this.task.id,
         last: true,
       }});

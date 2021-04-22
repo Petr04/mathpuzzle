@@ -1,6 +1,5 @@
 <template>
 <v-container>
-
 <mathjax
   :formula="question.text"
 ></mathjax>
@@ -18,20 +17,16 @@
     clear-icon="mdi-close"
     @click:clear="clearStatus"
     :error="status == StatusEnum.wrong"
-    :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
-    :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :messages="(status == StatusEnum.saved ? ['Сохранено'] : []).concat(attemptMessages)"
+    :messages="statusMessages"
     :readonly="readonly"
   ></v-text-field>
   <v-radio-group
     v-if="question.type == 'choiceQuestion'"
     v-model="answer"
     :error="status == StatusEnum.wrong"
-    :error-messages="status == StatusEnum.wrong ? 'Неверно' : []"
     :success="status == StatusEnum.correct"
-    :success-messages="status == StatusEnum.correct ? 'Верно' : []"
-    :messages="(status == StatusEnum.saved ? ['Сохранено'] : []).concat(attemptMessages)"
+    :messages="statusMessages"
     :readonly="readonly"
   >
     <template
@@ -76,7 +71,7 @@ import {VueMathjax} from 'vue-mathjax';
 import {StatusEnum} from '@/consts';
 import {
   empty, readonly, final,
-  attemptsLeft, attemptMessages} from '@/lib/questions/computed';
+  attemptsLeft, attemptMessage} from '@/lib/questions/computed';
 import {onSubmit, submit} from '@/lib/questions/methods';
 import decline from '@/lib/decline';
 import isTex from '@/lib/isTex';
@@ -107,18 +102,6 @@ export default {
         : this.question.attempts_max,
     };
   },
-  computed: {
-    empty,
-    readonly,
-    final,
-    attemptsLeft,
-    attemptMessages,
-  },
-  watch: {
-    status(newValue) {
-      this.$emit('statusChange', newValue);
-    },
-  },
   methods: {
     async checkAnswer() {
       const response = await this.$axios
@@ -136,5 +119,54 @@ export default {
     isTex,
     decline,
   },
+  computed: {
+    empty,
+    readonly,
+    final,
+    attemptsLeft,
+    attemptMessage,
+    statusMessages() {
+      if (this.status == StatusEnum.correct)
+        return 'Верно';
+
+      if ([StatusEnum.wrong, StatusEnum.saved].includes(this.status)) {
+        const statusString = this.status == StatusEnum.wrong
+          ? 'Неверно'
+          : 'Сохранено';
+
+        if (this.attemptMessage)
+          return statusString + '. ' + this.attemptMessage;
+        return statusString;
+      }
+
+      if (this.attemptMessage)
+        return this.attemptMessage;
+      return [];
+    },
+  },
+  watch: {
+    status(newValue) {
+      this.$emit('statusChange', newValue);
+    },
+  },
+  async mounted() {
+    const response = await this.$axios.get('/tasks/attempts/', {params: {
+      question: this.question.id,
+    }});
+
+    if (response.data.length == 0)
+      return;
+
+    const last = response.data.splice(-1)[0];
+    this.attempts = response.data.length;
+
+    if (this.question.type == 'textQuestion')
+      this.answer = last.answer;
+    else {
+      this.answer = Number(last.answer);
+    }
+
+    this.status = last.value ? StatusEnum.correct : StatusEnum.wrong;
+  }
 };
 </script>

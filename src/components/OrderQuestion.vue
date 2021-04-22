@@ -34,7 +34,7 @@
   </div>
 </draggable>
 
-<div class="body-2">{{ attemptMessages[0] }}</div>
+<div class="body-2">{{ attemptMessage }}</div>
 
 <v-btn
   depressed
@@ -53,7 +53,7 @@ import decline from '@/lib/decline';
 import {StatusEnum} from '@/consts';
 import {
   readonly, final, error, success, color,
-  attemptsLeft, attemptMessages} from '@/lib/questions/computed';
+  attemptsLeft, attemptMessage} from '@/lib/questions/computed';
 import {onSubmit, submit} from '@/lib/questions/methods';
 import '@/assets/css/draggable.css';
 import {VueMathjax} from 'vue-mathjax';
@@ -113,7 +113,7 @@ export default {
     color,
     final,
     attemptsLeft,
-    attemptMessages,
+    attemptMessage,
   },
   watch: {
     status(newValue) {
