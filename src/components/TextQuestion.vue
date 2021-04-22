@@ -73,8 +73,13 @@
 </style>
 <script>
 import {VueMathjax} from 'vue-mathjax';
-import {StatusEnum, finalStatuses} from '@/consts';
+import {StatusEnum} from '@/consts';
+import {
+  empty, readonly, final,
+  attemptsLeft, attemptMessages} from '@/lib/questions/computed';
+import {onSubmit, submit} from '@/lib/questions/methods';
 import decline from '@/lib/decline';
+import isTex from '@/lib/isTex';
 
 export default {
   props: {
@@ -103,32 +108,11 @@ export default {
     };
   },
   computed: {
-    empty() {
-      return !this.answer && this.answer !== 0;
-    },
-    readonly() {
-      return this.status == StatusEnum.correct ||
-        (this.status == StatusEnum.wrong &&
-          (this.attempts >= this.attemptsMax || this.check_on_submit));
-    },
-    final() {
-      return finalStatuses.includes(this.status)
-        || (this.status == StatusEnum.wrong && this.attemptsLeft == 0);
-    },
-    attemptsLeft() {
-      return this.attemptsMax - this.attempts;
-    },
-    attemptMessages() {
-      if (this.attemptsMax == Infinity)
-        return [];
-
-      return [this.attemptsLeft
-        ? `Остал${this.attemptsLeft == 1 ? 'а' : 'о'}сь `
-          + this.attemptsLeft + ' '
-          + this.decline('попытка', 1, this.attemptsLeft, 'и')
-        : 'Не осталось попыток'
-      ];
-    },
+    empty,
+    readonly,
+    final,
+    attemptsLeft,
+    attemptMessages,
   },
   watch: {
     status(newValue) {
@@ -144,25 +128,12 @@ export default {
         }});
       return response.data.correct;
     },
-    onSubmit() {
-      if (this.check_on_submit)
-        this.status = StatusEnum.saved;
-      else
-        this.submit();
-    },
-    submit() {
-      this.status = StatusEnum.checking;
-      this.checkAnswer().then(correct => this.status = correct
-        ? StatusEnum.correct
-        : StatusEnum.wrong);
-      this.attempts++;
-    },
     clearStatus() {
       this.status = StatusEnum.default;
     },
-    isTex(s) {
-      return s.slice(0, 2) == '$$' && s.slice(-2) == '$$';
-    },
+    onSubmit,
+    submit,
+    isTex,
     decline,
   },
 };
