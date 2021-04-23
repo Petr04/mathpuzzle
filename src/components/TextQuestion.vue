@@ -152,6 +152,7 @@ export default {
   async mounted() {
     const response = await this.$axios.get('/tasks/attempts/', {params: {
       question: this.question.id,
+      user: this.$store.state.email,
     }});
 
     if (response.data.length == 0)
