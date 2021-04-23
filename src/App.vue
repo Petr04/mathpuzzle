@@ -60,7 +60,6 @@
 </html>
 </template>
 <script>
-import axios from '@/plugins/axios';
 import { mapGetters } from 'vuex';
 import NavItem from '@/components/NavItem';
 import Avatar from '@/components/Avatar';
@@ -70,9 +69,9 @@ export default {
     title: 'Задания',
     titleTemplate: '%s | SciPuzzle',
   },
-  mounted() {
+  created() {
     if (this.$store.state.sessionToken) {
-      axios.defaults.headers.common['Authorization'] =
+      this.$axios.defaults.headers.common['Authorization'] =
         'Bearer ' + this.$store.state.sessionToken;
     }
 

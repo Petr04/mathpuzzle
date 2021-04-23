@@ -10,12 +10,21 @@
     outlined
   >
     <div class="flex-space-between">
-      <v-card-title>{{ task.title }}</v-card-title>
-      <div class="mr-3 grey--text text--darken-1" v-text="authorStr(task)">
+      <v-card-title class="pb-0">
+        <v-icon v-if="task.status == 'finished'" left>
+          mdi-check
+        </v-icon>
+        <v-icon v-else-if="task.status == 'started'" left>
+          mdi-progress-check
+        </v-icon>
+        <span class="title">{{ task.title }}</span>
+      </v-card-title>
+      <div class="mr-4 grey--text text--darken-1" v-text="authorStr(task)">
       </div>
     </div>
 
-    <v-card-subtitle class="mt-n8 subtitle-1">
+    <!-- <v-card-subtitle class="mt-n8 subtitle-1"> -->
+    <v-card-subtitle class="mt-n4 subtitle-1">
       <!-- {{ task.questions.length }} -->
       <!-- {{ decline('вопрос', 2, task.questions.length) }}<br> -->
       {{ getQuestionsPreview(task.questions) }}
