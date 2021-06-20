@@ -1,11 +1,6 @@
 <template>
 <v-container>
 
-<div class="mb-5">
-<mathjax
-  :formula="question.text"
-></mathjax>
-</div>
 <draggable
   animation="200"
   group="description"

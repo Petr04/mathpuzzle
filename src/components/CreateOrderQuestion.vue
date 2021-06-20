@@ -1,13 +1,7 @@
 <template>
 <v-container>
-  <v-textarea
-    label="Текст вопроса"
-    v-model="question.text"
-    :rules="[rules.required()]"
-    required
-    auto-grow
-    outlined
-  ></v-textarea>
+  <tinymce v-model="question.text" />
+
   <v-form ref="form">
     <draggable
       handle=".handle"
@@ -45,12 +39,14 @@
 <script>
 import '@/assets/css/draggable.css';
 import rules from '@/lib/rules';
+import Tinymce from '@/components/TinyMCE';
 import ImprovedTextField from '@/components/ImprovedTextField';
 import Draggable from 'vuedraggable';
 
 export default {
   props: ['question'],
   components: {
+    Tinymce,
     Draggable,
     ImprovedTextField,
   },

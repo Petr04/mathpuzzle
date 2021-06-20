@@ -114,6 +114,7 @@
       >
         <div class="mx-3">
           <h2 v-if="question.title" class="mb-3">{{ question.title }}</h2>
+          <div v-html="question.text"></div>
           <text-question
             v-if="['textQuestion', 'choiceQuestion'].includes(question.type)"
             ref="question"

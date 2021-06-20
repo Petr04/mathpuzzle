@@ -1,8 +1,4 @@
 <template>
-<v-container>
-<mathjax
-  :formula="question.text"
-></mathjax>
 <v-form
   ref="form"
   class="mt-3"
@@ -58,8 +54,6 @@
     class="transition mt-3"
   >Отправить</v-btn>
 </v-form>
-
-</v-container>
 </template>
 <style>
 .transition {

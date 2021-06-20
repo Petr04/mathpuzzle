@@ -5,7 +5,9 @@
 ```
 npm install
 ```
-2. Change `apiUrl` param in `src/settings.js` to your API URL.
+2. Change `apiUrl` param in `src/settings.js` to your API URL
+3. Get your TinyMCE key [https://www.tiny.cloud](here) (login or register)
+4. Create `src/tinyMCEKey.js` file exporting your TinyMCE key as default
 
 ### Compiles and hot-reloads for development
 ```

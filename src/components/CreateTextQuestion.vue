@@ -2,14 +2,9 @@
 <v-container>
 
 <v-form ref="form">
-  <v-textarea
-    label="Текст вопроса"
-    v-model="question.text"
-    :rules="[rules.required()]"
-    required
-    auto-grow
-    outlined
-  ></v-textarea>
+
+  <tinymce v-model="question.text" />
+
   <div class="flex-start">
     <span>Тип ответа:</span>
     <v-chip-group
@@ -73,6 +68,7 @@
 </template>
 <script>
 import ImprovedTextField from '@/components/ImprovedTextField';
+import Tinymce from '@/components/TinyMCE';
 import rules from '@/lib/rules';
 
 const typesLabels = {
@@ -84,6 +80,7 @@ export default {
   props: ['question'],
   components: {
     ImprovedTextField,
+    Tinymce,
   },
   data: () => ({
     rules,
