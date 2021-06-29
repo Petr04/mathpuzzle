@@ -25,6 +25,8 @@ const store = new Vuex.Store({
         isAuthenticated: (state, getters) =>
             Boolean(state.sessionToken)
             && Boolean(state.username)
+            && Boolean(state.firstName)
+            && Boolean(state.lastName)
             && !getters.isTokenExpired
             && state.userDataReceived,
         userData: state => ({
@@ -85,6 +87,11 @@ const store = new Vuex.Store({
         },
         logout(context) {
             context.commit('setUsername', null);
+            context.commit('setUserData', {
+                email: null,
+                firstName: null,
+                lastName: null,
+            });
             context.dispatch('removeSessionToken');
         },
     },
