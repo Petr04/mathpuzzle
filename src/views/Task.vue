@@ -261,17 +261,6 @@ export default {
       .get('/tasks/' + this.$route.params.id)
       .then(response => {
         this.task = response.data;
-        // this.task.questions.push({
-        //   "title":"Сортировка",
-        //   "attempts":1,
-        //   "type":"orderQuestion",
-        //   "elems":["4",String.raw`$$\sqrt{5}$$`],
-        //   "text": "Отсортируйте выражения по возрастанию. Какая-то формула: "
-        //     + String.raw`$$\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$. Ещё одна: `
-        //     + String.raw`$$c^2 = a^2 + b^2$$. `
-        //     + "Правильность решения задания отображается неверно, так как "
-        //     + "серверная часть ещё не готова.",
-        // }); // demo
         this.statuses = Array(this.task.questions.length).fill(StatusEnum.default);
       });
     this.questionRefs = this.$refs.question;

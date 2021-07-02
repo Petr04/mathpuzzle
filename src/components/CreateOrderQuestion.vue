@@ -4,22 +4,23 @@
 
   <v-form ref="form">
     <draggable
+      v-model="question.answers"
       handle=".handle"
       class="list-group"
-      v-bind="dragOptions"
+      animation="200"
       ghost-class="ghost"
     >
       <improved-text-field
-        v-for="(element,i) in question.elems"
-        :key="i"
-        @input="val => question.elems[i] = val"
+        v-for="(answer, i) in question.answers"
+        :key="answer.answer_num"
+        @input="val => question.answers[i].text = val"
         class="list-group-item"
         required
         dense
       >
         <template
           v-slot:append
-          v-if="question.elems.length > 2"
+          v-if="question.answers.length > 2"
         >
           <v-btn
             icon
@@ -53,24 +54,24 @@ export default {
   data() {
     return {
       rules,
+      lastAnswerNum: 2,
       dragging: false,
-      dragOptions: {
-        animation: 200,
-        group: "description",
-        disabled: false,
-        ghostClass: "ghost",
-      },
+      list: [],
     };
   },
   methods: {
     add() {
-      if (!this.question.elems.includes(''))
-        this.question.elems.push('');
-
+      if (!this.question.answers.includes('')) {
+        this.question.answers.push({
+          answer_num: this.lastAnswerNum++,
+          is_true: false,
+          text: ''
+        });
+      }
       this.$refs.form.validate();
     },
     del(n) {
-      this.question.elems.splice(n, 1);
+      this.question.answers.splice(n, 1);
     },
     validate() {
       return this.$refs.form.validate();

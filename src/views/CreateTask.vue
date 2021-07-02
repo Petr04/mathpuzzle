@@ -176,7 +176,14 @@ class OrderQuestion extends Question {
     super();
     this.type = 'orderQuestion';
     this.text = '';
-    this.elems = ['', ''];
+    this.answers = [];
+    for (let i = 0; i < 2; i++) {
+      this.answers.push({
+        answer_num: i,
+        is_true: false,
+        text: '',
+      });
+    }
   }
 }
 

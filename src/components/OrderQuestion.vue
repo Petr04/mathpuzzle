@@ -2,6 +2,7 @@
 <v-container>
 
 <draggable
+  v-model="question.answers"
   animation="200"
   group="description"
   :disabled="readonly"
@@ -9,7 +10,7 @@
   class="list-group"
 >
   <div
-    v-for="(elem, i) in question.elems"
+    v-for="(answer, i) in question.answers"
     :key="i"
     class="list-group-item"
   >
@@ -21,7 +22,7 @@
     >
       <div class="flex-space-between">
         <mathjax
-          :formula="elem"
+          :formula="answer"
         ></mathjax>
         <v-icon v-if="!readonly">mdi-drag-horizontal-variant</v-icon>
       </div>
@@ -53,6 +54,7 @@ import {onSubmit, submit} from '@/lib/questions/methods';
 import '@/assets/css/draggable.css';
 import {VueMathjax} from 'vue-mathjax';
 import Draggable from 'vuedraggable';
+import qs from 'qs';
 
 export default {
   components: {
@@ -85,18 +87,17 @@ export default {
   methods: {
     decline,
     async checkAnswer() {
-      // const response = await this.$axios
-      //   .get('/tasks/check/' + this.question.id, {params: {
-      //     type: this.question.type,
-      //     elements: this.question.elements,
-      //   }});
-      // return response.data.correct;
-
-
-      // demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      return Math.random() < .5;
+      const response = await this.$axios
+        .get('/tasks/check/' + this.question.id, {
+          params: {
+            type: this.question.type,
+            answers: this.question.answers,
+          },
+          paramsSerializer(params) {
+             return qs.stringify(params, {arrayFormat: 'repeat'})
+          },
+        });
+      return response.data.correct;
     },
     submit,
     onSubmit,
