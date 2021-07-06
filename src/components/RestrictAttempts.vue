@@ -33,6 +33,9 @@ export default {
       this.$emit('input', val);
     },
   },
+  mounted() {
+    this.$emit('input', this.finalAttempts);
+  },
 };
 
 </script>
