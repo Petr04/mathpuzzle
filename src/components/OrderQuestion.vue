@@ -116,6 +116,21 @@ export default {
       this.$emit('statusChange', newValue);
     },
   },
+  async mounted() {
+    const response = await this.$axios.get('/tasks/attempts/', {params: {
+      question: this.question.id,
+      user: this.$store.state.email,
+    }});
+
+    if (response.data.length == 0)
+      return;
+
+    const last = response.data.splice(-1)[0];
+    this.attempts = response.data.length;
+    this.status = last.value ? StatusEnum.correct : StatusEnum.wrong;
+
+    this.question.answers = last.answer;
+  },
 };
 
 </script>
