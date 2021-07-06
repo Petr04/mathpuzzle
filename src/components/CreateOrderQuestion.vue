@@ -61,14 +61,13 @@ export default {
   },
   methods: {
     add() {
-      if (!this.question.answers.includes('')) {
+      if (this.$refs.form.validate()) {
         this.question.answers.push({
           answer_num: this.lastAnswerNum++,
           is_true: false,
           text: ''
         });
       }
-      this.$refs.form.validate();
     },
     del(n) {
       this.question.answers.splice(n, 1);

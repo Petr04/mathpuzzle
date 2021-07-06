@@ -91,10 +91,8 @@ export default {
   },
   methods: {
     createChoice() {
-      if (!this.question.choices.includes(''))
+      if (this.$refs.choicesForm.validate())
         this.question.choices.push('');
-
-      this.$refs.choicesForm.validate();
     },
     validate() {
       let ret = this.$refs.form.validate();
