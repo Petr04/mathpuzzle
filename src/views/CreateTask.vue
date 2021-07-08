@@ -171,6 +171,13 @@ class TextQuestion extends Question {
   }
 }
 
+class ChoiceQuestion extends TextQuestion {
+  constructor() {
+    super();
+    this.type == 'choiceQuestion';
+  }
+}
+
 class OrderQuestion extends Question {
   constructor() {
     super();
@@ -189,6 +196,7 @@ class OrderQuestion extends Question {
 
 const typeToClass = {
   textQuestion: TextQuestion,
+  choiceQuestion: ChoiceQuestion,
   orderQuestion: OrderQuestion,
 };
 
@@ -213,7 +221,12 @@ export default {
         {
           icon: 'mdi-text',
           type: 'textQuestion',
-          label: 'Текстовый вопрос'
+          label: 'Вопрос с текстовым ответом'
+        },
+        {
+          icon: 'mdi-list-status',
+          type: 'choiceQuestion',
+          label: 'Вопрос с выбором ответа'
         },
         {
           icon: 'mdi-format-list-numbered',

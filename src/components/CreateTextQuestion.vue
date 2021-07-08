@@ -5,21 +5,6 @@
 
   <tinymce v-model="question.text" />
 
-  <div class="flex-start">
-    <span>Тип ответа:</span>
-    <v-chip-group
-      v-model="question.type"
-      class="ml-3"
-      active-class="blue--text text--accent-4"
-      mandatory
-    >
-      <v-chip
-        v-for="(label, type) in typesLabels"
-        :key="type"
-        :value="type"
-      >{{ label }}</v-chip>
-    </v-chip-group>
-  </div>
   <improved-text-field
     v-if="question.type == 'textQuestion'"
     v-model="question.answer"
@@ -71,11 +56,6 @@ import ImprovedTextField from '@/components/ImprovedTextField';
 import Tinymce from '@/components/TinyMCE';
 import rules from '@/lib/rules';
 
-const typesLabels = {
-  textQuestion: 'Текстовый ответ',
-  choiceQuestion: 'Выбор ответа',
-};
-
 export default {
   props: ['question'],
   components: {
@@ -84,7 +64,6 @@ export default {
   },
   data: () => ({
     rules,
-    typesLabels,
   }),
   mounted() {
     this.question.attempts_max = 0;
