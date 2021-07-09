@@ -12,4 +12,4 @@ export const finalStatuses = Object.freeze([
     StatusEnum.saved,
 ]);
 
-export const baseURL = 'http://127.0.0.1:8000';
+export const baseURL = 'https://afternoon-brook-29555.herokuapp.com';
