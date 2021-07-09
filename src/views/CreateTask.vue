@@ -174,7 +174,7 @@ class TextQuestion extends Question {
 class ChoiceQuestion extends TextQuestion {
   constructor() {
     super();
-    this.type == 'choiceQuestion';
+    this.type = 'choiceQuestion';
   }
 }
 
