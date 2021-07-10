@@ -125,8 +125,8 @@ export default {
     if (response.data.length == 0)
       return;
 
-    const last = response.data.splice(-1)[0];
     this.attempts = response.data.length;
+    const last = response.data.splice(-1)[0];
     this.status = last.value ? StatusEnum.correct : StatusEnum.wrong;
 
     this.question.answers = last.answer;
