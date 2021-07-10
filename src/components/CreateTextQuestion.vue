@@ -9,7 +9,7 @@
     v-if="question.type == 'textQuestion'"
     v-model="question.answer"
     label="Ответ"
-    :max-length="64"
+    :max-length="256"
     required
   ></improved-text-field>
   <template v-else-if="question.type == 'choiceQuestion'">
@@ -19,7 +19,7 @@
           v-for="(choice, i) in question.choices"
           :key="i"
           required
-          :max-length="64"
+          :max-length="256"
           :value="choice"
           @input="val => question.choices[i] = val"
           dense
