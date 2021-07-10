@@ -1,3 +1,5 @@
+img[alt$="www.000webhost.com"] { display: none; } /* hide 000webhost watermark */
+
 .MathJax_Display[style] {
     display: inline !important;
     text-align: left !important;
