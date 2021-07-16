@@ -12,5 +12,5 @@ export const finalStatuses = Object.freeze([
     StatusEnum.saved,
 ]);
 
-export const baseURL = 'https://afternoon-brook-29555.herokuapp.com';
+export const baseURL = 'https://scipuzzle.herokuapp.com';
 // export const baseURL = 'http://localhost:8000';
