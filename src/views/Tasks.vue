@@ -16,7 +16,7 @@
     v-for="(task, i) in tasks"
     :key="i"
     :to="'/task/' + task.id"
-    :class="'mb-' + margin"
+    :style="`margin-bottom: ${margin}px`"
     outlined
   >
     <div class="flex-space-between">
@@ -83,6 +83,7 @@
 .search {
   position: fixed;
   z-index: 1;
+  transition: .3s top;
 }
 
 .loader-container {
@@ -102,9 +103,12 @@ export default {
     // SpeedDial,
   },
   data: () => ({
-    margin: 3,
+    margin: 12,
     searchMargin: 3,
     searchWidth: 0,
+    hideSearchBarSensetivity: 0,
+    hideSearchBarDelay: 90,
+    scrolledToBottomOffset: 40,
 
     tasks: [],
     search: '',
@@ -113,6 +117,7 @@ export default {
     loading: true,
     hasMore: true,
     scrolledToBottom: false,
+    scrolledToTop: false,
 
     questionsPreviewMaxCount: 10,
     questionsPreviewSeparator: ' • ',
@@ -125,6 +130,10 @@ export default {
     scrolledToBottom(val) {
       if (val)
         this.loadTasks();
+    },
+    scrolledToTop(val) {
+      if (val)
+        this.setSearchBarVisibility(true);
     },
     search(s) {
       this.$axios
@@ -152,21 +161,40 @@ export default {
 
       return questions.join(this.questionsPreviewSeparator);
     },
+    setSearchBarVisibility(visibility) {
+      this.$refs.search.$el.style.top = (visibility
+        ? this.margin
+        : -this.totalSearchMargin) + 'px';
+    },
     setScrollWatching() {
+      let lastScrollTop = 0;
+
       window.onscroll = () => {
         // Search bar visibility control
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const diff = scrollTop - lastScrollTop;
 
+        if (Math.abs(diff) > this.hideSearchBarSensetivity) {
+          setTimeout(() => this.setSearchBarVisibility(diff < 0),
+            this.hideSearchBarDelay);
+        }
 
-        // Loading control
+        lastScrollTop = scrollTop;
+
+        // scrolledToTop
+        this.scrolledToTop = window.scrollY == 0;
+
+        // scrolledToBottom
         if (this.scrolledToBottom) {
           this.scrolledToBottom = false;
         }
 
-        let bottomOfWindow = Math.max(
+        const bottomOfWindow = Math.max(
           window.pageYOffset,
           document.documentElement.scrollTop,
           document.body.scrollTop)
-        + window.innerHeight < document.documentElement.offsetHeight - 40;
+        + window.innerHeight
+          < document.documentElement.offsetHeight - this.scrolledToBottomOffset;
 
         if (!bottomOfWindow) {
           this.scrolledToBottom = true;
@@ -208,10 +236,12 @@ export default {
     window.addEventListener('resize', this.adjustSearchBarWidth);
 
     this.totalSearchMargin = this.$refs.search.$el.offsetHeight
-      + this.searchMargin + 4 * this.margin; // 1 vue js spacing unit = 4px
+      + this.searchMargin + this.margin;
 
     this.setScrollWatching();
     this.loadTasks();
+
+    this.$refs.search.$el.style.top = this.margin + 'px';
   },
   destroyed () {
     window.removeEventListener('resize', this.handleScroll);
