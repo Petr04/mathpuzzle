@@ -166,20 +166,22 @@ export default {
         ? this.margin
         : -this.totalSearchMargin) + 'px';
     },
-    setScrollWatching() {
+    setScrollWatching() { // split to multiple functions
       let lastScrollTop = 0;
 
       window.onscroll = () => {
         // Search bar visibility control
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const diff = scrollTop - lastScrollTop;
+        if (this.$refs.search) {
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const diff = scrollTop - lastScrollTop;
 
-        if (Math.abs(diff) > this.hideSearchBarSensetivity) {
-          setTimeout(() => this.setSearchBarVisibility(diff < 0),
-            this.hideSearchBarDelay);
+          if (Math.abs(diff) > this.hideSearchBarSensetivity) {
+            setTimeout(() => this.setSearchBarVisibility(diff < 0),
+              this.hideSearchBarDelay);
+          }
+
+          lastScrollTop = scrollTop;
         }
-
-        lastScrollTop = scrollTop;
 
         // scrolledToTop
         this.scrolledToTop = window.scrollY == 0;
