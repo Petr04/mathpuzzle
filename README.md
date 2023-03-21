@@ -1,5 +1,7 @@
 # mathpuzzle
 
+[Demo](https://scipuzzle.ru)
+
 ## Project setup
 1. Run:
 ```
